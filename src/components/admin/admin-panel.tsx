@@ -19,6 +19,7 @@ import {
   X,
   LogOut,
   ChevronLeft,
+  Database,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
@@ -37,6 +38,7 @@ import CouponsTab from './coupons-tab'
 import ReviewsTab from './reviews-tab'
 import QuestionsTab from './questions-tab'
 import SettingsTab from './settings-tab'
+import ScraperTab from './scraper-tab'
 
 interface AdminPanelProps {
   onBack: () => void
@@ -56,6 +58,7 @@ const menuItems = [
   { id: 'reviews', label: 'Yorumlar', icon: Star },
   { id: 'questions', label: 'Sorular', icon: HelpCircle },
   { id: 'settings', label: 'Ayarlar', icon: Settings },
+  { id: 'scraper', label: 'MOTOLUX Scraper', icon: Database },
 ]
 
 function SidebarContent({ activeTab, setActiveTab, onClose }: { activeTab: string; setActiveTab: (id: string) => void; onClose?: () => void }) {
@@ -140,6 +143,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
       case 'reviews': return <ReviewsTab />
       case 'questions': return <QuestionsTab />
       case 'settings': return <SettingsTab />
+      case 'scraper': return <ScraperTab />
       default: return <DashboardTab />
     }
   }
