@@ -31,12 +31,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   login: async (email, password) => {
     try {
-      // First get CSRF token
+      // Step 1: Verify credentials via our custom endpoint
+      const verifyRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (!verifyRes.ok) {
+        return false
+      }
+
+      const verifyData = await verifyRes.json()
+      if (!verifyData.success) {
+        return false
+      }
+
+      // Step 2: Get CSRF token from NextAuth
       const csrfRes = await fetch('/api/auth/csrf')
       const csrfData = await csrfRes.json()
-      
-      // Then sign in with credentials
-      const res = await fetch('/api/auth/callback/credentials', {
+
+      // Step 3: Sign in via NextAuth credentials callback
+      // This sets the session cookie properly
+      const signInRes = await fetch('/api/auth/callback/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -45,12 +62,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           csrfToken: csrfData.csrfToken,
           json: 'true',
         }),
+        redirect: 'follow',
       })
-      
-      if (res.ok) {
+
+      // NextAuth returns 200 with redirect URL on success
+      // or an error URL on failure
+      if (signInRes.ok) {
+        const text = await signInRes.text()
+        try {
+          const data = JSON.parse(text)
+          // If redirect URL contains "signin" with error, login failed
+          if (data.url && data.url.includes('signin') && data.url.includes('error')) {
+            return false
+          }
+        } catch {
+          // Non-JSON response, but 200 OK - likely success
+        }
+
+        // Wait a moment for cookie to be set
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        // Fetch user to confirm session
         await get().fetchUser()
-        return true
+        return !!get().user
       }
+
       return false
     } catch (error) {
       console.error('Login error:', error)
@@ -76,10 +112,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      // Get CSRF token for signout
       const csrfRes = await fetch('/api/auth/csrf')
       const csrfData = await csrfRes.json()
-      
+
       await fetch('/api/auth/signout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

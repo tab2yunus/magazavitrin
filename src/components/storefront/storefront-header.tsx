@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown } from 'lucide-react'
+import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown, Shield } from 'lucide-react'
 import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
@@ -178,6 +178,18 @@ export default function StorefrontHeader() {
 
           {/* Action icons */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {user && (user.role === 'super_admin' || user.role === 'editor') && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={() => navigate({ page: 'admin' })}
+                title="Yönetim Paneli"
+              >
+                <Shield className="h-5 w-5 text-[#F27A1A]" />
+              </Button>
+            )}
+
             <Button
               variant="ghost"
               size="icon"

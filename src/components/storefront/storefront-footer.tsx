@@ -1,10 +1,12 @@
 'use client'
 
 import { useRouterStore } from '@/stores/router-store'
+import { useAuthStore } from '@/stores/auth-store'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function StorefrontFooter() {
   const { navigate, goHome } = useRouterStore()
+  const { user } = useAuthStore()
 
   return (
     <footer className="mt-auto bg-[#1A2744] text-white">
@@ -119,10 +121,18 @@ export default function StorefrontFooter() {
       <div className="border-t border-white/10 py-4">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400">
           <span>© {new Date().getFullYear()} MağazaVitrin. Tüm hakları saklıdır.</span>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             <button className="hover:text-white transition-colors">Kullanım Koşulları</button>
             <button className="hover:text-white transition-colors">KVKK</button>
             <button className="hover:text-white transition-colors">Çerez Politikası</button>
+            {user && (user.role === 'super_admin' || user.role === 'editor') && (
+              <button
+                onClick={() => navigate({ page: 'admin' })}
+                className="text-[#F27A1A] hover:text-[#FFB366] transition-colors font-semibold"
+              >
+                Yönetim Paneli
+              </button>
+            )}
           </div>
         </div>
       </div>
