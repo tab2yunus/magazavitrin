@@ -61,7 +61,7 @@ const menuItems = [
   { id: 'scraper', label: 'MOTOLUX Scraper', icon: Database },
 ]
 
-function SidebarContent({ activeTab, setActiveTab, onClose }: { activeTab: string; setActiveTab: (id: string) => void; onClose?: () => void }) {
+function SidebarContent({ activeTab, setActiveTab, onBack, onMobileClose }: { activeTab: string; setActiveTab: (id: string) => void; onBack: () => void; onMobileClose?: () => void }) {
   return (
     <div className="flex flex-col h-full bg-[#1A2744]">
       {/* Logo */}
@@ -86,7 +86,7 @@ function SidebarContent({ activeTab, setActiveTab, onClose }: { activeTab: strin
                 key={item.id}
                 onClick={() => {
                   setActiveTab(item.id)
-                  onClose?.()
+                  onMobileClose?.()
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive
@@ -105,7 +105,7 @@ function SidebarContent({ activeTab, setActiveTab, onClose }: { activeTab: strin
       {/* Footer */}
       <div className="p-4 border-t border-white/10">
         <button
-          onClick={onClose}
+          onClick={onBack}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
         >
           <LogOut className="w-5 h-5" />
@@ -157,7 +157,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
         <SidebarContent
           activeTab={activeTab}
           setActiveTab={handleSetActive}
-          onClose={handleBack}
+          onBack={handleBack}
         />
       </aside>
 
@@ -181,10 +181,11 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
                     handleSetActive(id)
                     setMobileOpen(false)
                   }}
-                  onClose={() => {
+                  onBack={() => {
                     handleBack()
                     setMobileOpen(false)
                   }}
+                  onMobileClose={() => setMobileOpen(false)}
                 />
               </SheetContent>
             </Sheet>
