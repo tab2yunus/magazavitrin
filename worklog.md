@@ -117,37 +117,35 @@ Work Log:
 - Auth flow: register, login, session check all working
 - Shopping flow: add to cart, checkout, order creation all working
 - Admin flow: dashboard stats, order management, product CRUD all working
-- Subagent 1 fixed 12 admin panel bugs:
-  - Fixed ?active= query param filtering (5 API routes)
-  - Added missing imports in reviews and store-questions APIs
-  - Fixed products tab filter values (name→slug)
-  - Fixed admin tabs fetching only inactive items (5 components)
-- Subagent 2 fixed 11 storefront bugs:
-  - Fixed product detail variation matching for multi-variation products
-  - Fixed price/stock not updating when variation changes
-  - Fixed out-of-stock variations being selectable
-  - Fixed first variation defaulting to out-of-stock options
-  - Fixed cart page coupon toast showing on failure
-  - Fixed cart page free shipping threshold message
-  - Fixed category page brand filter only sending first brand
-  - Added fetchComparisons method to comparison store
-  - Fixed clearComparisons not syncing with server
-  - Fixed comparisons page store not synced on load
-  - Fixed storefront header missing dependency arrays
+- Subagent 1 fixed 12 admin panel bugs
+- Subagent 2 fixed 11 storefront bugs
 - Fixed OptionItem type missing slug field in products-tab
-- Enhanced /api/auth/me to return full user data (phone, createdAt, etc.)
+- Enhanced /api/auth/me to return full user data
 
 Stage Summary:
 - 23+ bugs found and fixed across admin and storefront
 - All API endpoints verified working
 - ESLint: 0 errors
-- Complete marketplace functionality verified:
-  ✅ Admin panel (dashboard, 12 CRUD tabs)
-  ✅ Product add/edit/delete
-  ✅ Store profile add/edit
-  ✅ Cart operations (add/update/remove)
-  ✅ Order creation and tracking
-  ✅ Customer register/login
-  ✅ Coupon validation
-  ✅ Search functionality
-  ✅ Favorites and comparisons
+
+---
+Task ID: 8
+Agent: Main Orchestrator
+Task: Build ImportedProduct → Product conversion flow (publish mechanism)
+
+Work Log:
+- Added `isPublished`, `publishedProductId`, `publishedAt` fields to ImportedProduct schema
+- Pushed schema changes to SQLite database
+- Created `/api/scraper/publish` API endpoint with GET (status) and POST (publish) methods
+- Publish endpoint: auto-creates Categories, Brands, Store for MOTOLUX
+- Publish endpoint: calculates retail price with configurable markup (default 30%)
+- Publish endpoint: creates Product + ProductImage records from ImportedProduct data
+- Updated ScraperTab UI with publish buttons, status indicators, markup settings, selection
+- Updated `/api/scraper/products` to support published filter
+- Cleared .next cache and regenerated Prisma client
+- Tested: 3807 imported products → 2227 active products on marketplace
+
+Stage Summary:
+- Full scraper → publish → marketplace flow now works end-to-end
+- 3807 products imported, 2227 active (with stock), rest inactive (no stock)
+- MOTOLUX store auto-created with slug 'motolux'
+- 43 categories and 26 brands auto-created from imported data

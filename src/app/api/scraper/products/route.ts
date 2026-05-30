@@ -9,6 +9,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category') || ''
+    const published = searchParams.get('published') // 'true' | 'false' | null
 
     const where: any = { sourceSupplier: 'MOTOLUX' }
     if (search) {
@@ -21,6 +22,11 @@ export async function GET(request: Request) {
     }
     if (category) {
       where.category = category
+    }
+    if (published === 'true') {
+      where.isPublished = true
+    } else if (published === 'false') {
+      where.isPublished = false
     }
 
     const [products, total] = await Promise.all([

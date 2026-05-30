@@ -361,22 +361,25 @@ model SeoSetting {
 
 // ─── IMPORTED PRODUCTS (MOTOLUX SCRAPER) ───────────────────
 model ImportedProduct {
-  id              String   @id @default(cuid())
-  sourceSupplier  String   @default("MOTOLUX")
-  sourceProductId String   @unique
-  productName     String
-  description     String?
-  category        String?
-  brand           String?
-  model           String?
-  sku             String?
-  barcode         String?
-  stock           Int      @default(0)
-  supplierPrice   Float    @default(0)
-  imageUrls       String?  // JSON array string
-  sourceUrl       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  sourceSupplier    String   @default("MOTOLUX")
+  sourceProductId   String   @unique
+  productName       String
+  description       String?
+  category          String?
+  brand             String?
+  model             String?
+  sku               String?
+  barcode           String?
+  stock             Int      @default(0)
+  supplierPrice     Float    @default(0)
+  imageUrls         String?  // JSON array string
+  sourceUrl         String?
+  isPublished       Boolean  @default(false)
+  publishedProductId String? // Links to Product.id after publishing
+  publishedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 // ─── SCRAPER LOG ──────────────────────────────────────────
