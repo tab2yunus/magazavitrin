@@ -50,7 +50,7 @@ export default function StoresTab() {
 
   const fetchStores = useCallback(() => {
     setLoading(true)
-    fetch('/api/stores?active=')
+    fetch('/api/stores')
       .then(r => r.json())
       .then(d => setStores(d))
       .catch(() => toast.error('Mağazalar yüklenemedi'))

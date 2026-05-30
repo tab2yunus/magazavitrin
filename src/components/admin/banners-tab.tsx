@@ -50,7 +50,7 @@ export default function BannersTab() {
 
   const fetchBanners = useCallback(() => {
     setLoading(true)
-    fetch('/api/banners?active=')
+    fetch('/api/banners')
       .then(r => r.json())
       .then(d => setBanners(Array.isArray(d) ? d : []))
       .catch(() => toast.error('Bannerlar yüklenemedi'))

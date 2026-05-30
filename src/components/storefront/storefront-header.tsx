@@ -5,7 +5,7 @@ import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown } from 'lucide-
 import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
-import { useFavoritesStore } from '@/stores/favorites-store'
+import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
 import type { Category } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,7 @@ export default function StorefrontHeader() {
   const { items, fetchCart } = useCartStore()
   const { user, fetchUser } = useAuthStore()
   const { fetchFavorites } = useFavoritesStore()
+  const { fetchComparisons } = useComparisonStore()
   const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -38,11 +39,14 @@ export default function StorefrontHeader() {
     loadInitialData()
     fetchUser()
     fetchCart()
-  }, [])
+  }, [fetchUser, fetchCart])
 
   useEffect(() => {
-    if (user) fetchFavorites()
-  }, [user])
+    if (user) {
+      fetchFavorites()
+      fetchComparisons()
+    }
+  }, [user, fetchFavorites, fetchComparisons])
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 

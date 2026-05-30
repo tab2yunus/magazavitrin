@@ -54,6 +54,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
 
 interface ComparisonState {
   productIds: string[]
+  fetchComparisons: () => Promise<void>
   toggleComparison: (productId: string) => Promise<void>
   isComparing: (productId: string) => boolean
   clearComparisons: () => void
@@ -61,6 +62,18 @@ interface ComparisonState {
 
 export const useComparisonStore = create<ComparisonState>((set, get) => ({
   productIds: [],
+
+  fetchComparisons: async () => {
+    try {
+      const res = await fetch('/api/comparisons')
+      if (res.ok) {
+        const data = await res.json()
+        set({ productIds: data.map((c: any) => c.productId).filter(Boolean) })
+      }
+    } catch {
+      // ignore
+    }
+  },
 
   toggleComparison: async (productId) => {
     const isComp = get().productIds.includes(productId)
@@ -88,5 +101,6 @@ export const useComparisonStore = create<ComparisonState>((set, get) => ({
 
   clearComparisons: () => {
     set({ productIds: [] })
+    fetch('/api/comparisons', { method: 'DELETE' }).catch(() => {})
   },
 }))

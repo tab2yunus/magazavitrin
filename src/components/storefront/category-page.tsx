@@ -44,7 +44,9 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       // Load products
       const params = new URLSearchParams({ category: slug, sort, limit: '24' })
       if (selectedBrands.length > 0) {
-        params.set('brand', selectedBrands[0])
+        selectedBrands.forEach((brandId) => {
+          params.append('brand', brandId)
+        })
       }
       if (priceRange[0] > 0) params.set('minPrice', String(priceRange[0]))
       if (priceRange[1] < 100000) params.set('maxPrice', String(priceRange[1]))

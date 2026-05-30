@@ -7,10 +7,10 @@ interface CartState {
   couponDiscount: number
   isLoading: boolean
   fetchCart: () => Promise<void>
-  addItem: (productId: string, quantity: number, variationId?: string) => Promise<void>
+  addItem: (productId: string, quantity: number, variationId?: string, selectedVariations?: Record<string, string>) => Promise<void>
   updateItem: (itemId: string, quantity: number) => Promise<void>
   removeItem: (itemId: string) => Promise<void>
-  applyCoupon: (code: string) => Promise<void>
+  applyCoupon: (code: string) => Promise<boolean>
   clearCart: () => Promise<void>
   getSubtotal: () => number
   getShippingCost: () => number
@@ -43,13 +43,13 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  addItem: async (productId, quantity, variationId) => {
+  addItem: async (productId, quantity, variationId, selectedVariations) => {
     set({ isLoading: true })
     try {
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, quantity, variationId }),
+        body: JSON.stringify({ productId, quantity, variationId, selectedVariations }),
       })
       if (res.ok) {
         const data = await res.json()
@@ -110,9 +110,11 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (res.ok) {
         const data = await res.json()
         set({ couponCode: code, couponDiscount: data.discount || 0 })
+        return true
       }
+      return false
     } catch {
-      // ignore
+      return false
     }
   },
 

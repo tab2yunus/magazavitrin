@@ -43,7 +43,7 @@ export default function BrandsTab() {
 
   const fetchBrands = useCallback(() => {
     setLoading(true)
-    fetch('/api/brands?active=')
+    fetch('/api/brands')
       .then(r => r.json())
       .then(d => setBrands(Array.isArray(d) ? d : []))
       .catch(() => toast.error('Markalar yüklenemedi'))

@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export default function ComparisonsPage() {
   const { navigate } = useRouterStore()
   const { user, fetchUser, isLoading } = useAuthStore()
-  const { clearComparisons, toggleComparison } = useComparisonStore()
+  const { clearComparisons, toggleComparison, fetchComparisons } = useComparisonStore()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -37,11 +37,13 @@ export default function ComparisonsPage() {
           const compProducts = Array.isArray(data) ? data.map((c: any) => c.product).filter(Boolean) : []
           setProducts(compProducts)
         }
+        // Sync store state with server
+        await fetchComparisons()
       } catch { /* ignore */ }
       finally { setLoading(false) }
     }
     if (user) loadComparisons()
-  }, [user])
+  }, [user, fetchComparisons])
 
   if (loading || !user) {
     return (

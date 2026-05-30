@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { ShoppingCart, Heart, BarChart3, Star, Truck, Shield, RotateCcw, ChevronRight, Minus, Plus, Store } from 'lucide-react'
 import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
-import { useFavoritesStore } from '@/stores/favorites-store'
-import { useComparisonStore } from '@/stores/favorites-store'
+import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
 import type { Product, ProductVariation, Review } from '@/types'
 import { formatPrice, getDiscountPercent } from '@/lib/storefront-utils'
 import ProductCard from './product-card'
@@ -35,14 +34,20 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
   const loadProduct = useCallback(async () => {
     setLoading(true)
+    setSelectedImage(0)
+    setQuantity(1)
     try {
       const res = await fetch(`/api/products/${slug}`)
       if (res.ok) {
         const data = await res.json()
         setProduct(data)
-        // Initialize first variation per group
+        // Initialize first in-stock variation per group
         if (data.variations) {
           const initVars: Record<string, string> = {}
+          data.variations.forEach((v: ProductVariation) => {
+            if (!initVars[v.name] && v.stock > 0) initVars[v.name] = v.value
+          })
+          // Fallback: if all variations of a group are out of stock, pick the first one
           data.variations.forEach((v: ProductVariation) => {
             if (!initVars[v.name]) initVars[v.name] = v.value
           })
@@ -84,9 +89,6 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     )
   }
 
-  const hasDiscount = product.discountPrice && product.discountPrice < product.normalPrice
-  const discountPercent = hasDiscount ? getDiscountPercent(product.normalPrice, product.discountPrice) : 0
-  const currentPrice = product.discountPrice || product.normalPrice
   const images = product.images || []
   const variations = product.variations || []
   const attributes = product.attributes || []
@@ -102,17 +104,40 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     variationGroups[v.name].push(v)
   })
 
+  // Find the currently selected variation (for price/stock override)
+  const selectedVariation = Object.keys(variationGroups).length === 1
+    ? variations.find((v: ProductVariation) => {
+        const [name, value] = Object.entries(selectedVariations)[0]
+        return v.name === name && v.value === value
+      })
+    : null
+
+  const currentPrice = selectedVariation?.price || product.discountPrice || product.normalPrice
+  const effectiveStock = selectedVariation?.stock ?? product.stock
+  const effectiveHasDiscount = product.discountPrice
+    ? product.discountPrice < product.normalPrice
+    : !!selectedVariation?.price && selectedVariation.price < product.normalPrice
+  const effectiveDiscountPercent = effectiveHasDiscount
+    ? getDiscountPercent(product.normalPrice, currentPrice)
+    : 0
+
   async function handleAddToCart() {
-    // Find matching variation id
+    // Find matching variation IDs per group
     let variationId: string | undefined
     if (Object.keys(selectedVariations).length > 0) {
-      const match = variations.find((v: ProductVariation) =>
-        Object.entries(selectedVariations).every(([name, value]) => v.name === name && v.value === value)
-      )
-      variationId = match?.id
+      if (Object.keys(variationGroups).length === 1) {
+        // Single variation group: find the exact matching variation
+        const match = variations.find((v: ProductVariation) => {
+          const [name, value] = Object.entries(selectedVariations)[0]
+          return v.name === name && v.value === value
+        })
+        variationId = match?.id
+      }
+      // For multi-variation products, send selectedVariations to let
+      // the backend resolve the correct combination
     }
     try {
-      await addItem(product.id, quantity, variationId)
+      await addItem(product.id, quantity, variationId, selectedVariations)
       toast({ title: 'Sepete eklendi', description: product.name })
     } catch {
       toast({ title: 'Hata', description: 'Sepete eklenemedi. Lütfen giriş yapın.', variant: 'destructive' })
@@ -153,9 +178,9 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
                 <ShoppingCart className="h-16 w-16" />
               </div>
             )}
-            {hasDiscount && (
+            {effectiveHasDiscount && (
               <Badge className="absolute top-4 left-4 bg-[#E74C3C] text-white text-base font-bold px-3 py-1 border-0">
-                %{discountPercent} İndirim
+                %{effectiveDiscountPercent} İndirim
               </Badge>
             )}
           </div>
@@ -222,9 +247,9 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
           {/* Price */}
           <div className="space-y-1">
-            {hasDiscount && (
+            {effectiveHasDiscount && (
               <div className="flex items-center gap-2">
-                <Badge className="bg-[#E74C3C] text-white border-0 text-sm">%{discountPercent}</Badge>
+                <Badge className="bg-[#E74C3C] text-white border-0 text-sm">%{effectiveDiscountPercent}</Badge>
                 <span className="text-lg text-gray-400 line-through">{formatPrice(product.normalPrice)}</span>
               </div>
             )}
@@ -233,10 +258,10 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
           {/* Stock status */}
           <div className="flex items-center gap-2">
-            {product.stock > 0 ? (
+            {effectiveStock > 0 ? (
               <>
                 <Badge variant="outline" className="text-[#3CB371] border-[#3CB371] bg-green-50">
-                  <Shield className="h-3 w-3 mr-1" /> Stokta {product.stock} adet
+                  <Shield className="h-3 w-3 mr-1" /> Stokta {effectiveStock} adet
                 </Badge>
                 {product.shippingTime && (
                   <Badge variant="outline" className="text-blue-600 border-blue-300 bg-blue-50">
@@ -259,6 +284,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
                     key={opt.id}
                     variant={selectedVariations[name] === opt.value ? 'default' : 'outline'}
                     size="sm"
+                    disabled={opt.stock <= 0}
                     onClick={() => setSelectedVariations({ ...selectedVariations, [name]: opt.value })}
                     className={selectedVariations[name] === opt.value ? 'bg-[#F27A1A] hover:bg-[#D4630E] text-white' : ''}
                   >
@@ -287,7 +313,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
-                onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                onClick={() => setQuantity(Math.min(effectiveStock, quantity + 1))}
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -298,7 +324,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           <div className="space-y-3 pt-2">
             <Button
               onClick={handleAddToCart}
-              disabled={product.stock <= 0}
+              disabled={effectiveStock <= 0}
               className="w-full h-12 text-base font-bold bg-[#F27A1A] hover:bg-[#D4630E] text-white"
             >
               <ShoppingCart className="h-5 w-5 mr-2" />

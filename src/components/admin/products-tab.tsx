@@ -45,7 +45,7 @@ interface ProductItem {
   images?: { url: string; alt?: string }[]
 }
 
-interface OptionItem { id: string; name: string }
+interface OptionItem { id: string; name: string; slug: string }
 
 const defaultForm = {
   name: '', sku: '', barcode: '', description: '', shortDescription: '',
@@ -71,9 +71,9 @@ export default function ProductsTab() {
   const fetchProducts = useCallback(() => {
     setLoading(true)
     const params = new URLSearchParams({ admin: 'true', limit: '100' })
-    if (filterCategory) params.set('category', filterCategory)
-    if (filterBrand) params.set('brand', filterBrand)
-    if (filterStore) params.set('store', filterStore)
+    if (filterCategory && filterCategory !== 'all') params.set('category', filterCategory)
+    if (filterBrand && filterBrand !== 'all') params.set('brand', filterBrand)
+    if (filterStore && filterStore !== 'all') params.set('store', filterStore)
     fetch(`/api/products?${params}`)
       .then(r => r.json())
       .then(d => setProducts(d.products || d))
@@ -84,7 +84,7 @@ export default function ProductsTab() {
   const fetchOptions = useCallback(() => {
     fetch('/api/categories?flat=true').then(r => r.json()).then(d => setCategories(Array.isArray(d) ? d : [])).catch(() => {})
     fetch('/api/brands').then(r => r.json()).then(d => setBrands(Array.isArray(d) ? d : [])).catch(() => {})
-    fetch('/api/stores?active=').then(r => r.json()).then(d => setStores(Array.isArray(d) ? d : [])).catch(() => {})
+    fetch('/api/stores').then(r => r.json()).then(d => setStores(Array.isArray(d) ? d : [])).catch(() => {})
   }, [])
 
   useEffect(() => { fetchProducts() }, [fetchProducts])
@@ -160,21 +160,21 @@ export default function ProductsTab() {
           <SelectTrigger className="w-[180px]"><SelectValue placeholder="Kategori" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tümü</SelectItem>
-            {categories.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}
+            {categories.map(c => <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={filterBrand} onValueChange={setFilterBrand}>
           <SelectTrigger className="w-[180px]"><SelectValue placeholder="Marka" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tümü</SelectItem>
-            {brands.map(b => <SelectItem key={b.id} value={b.name}>{b.name}</SelectItem>)}
+            {brands.map(b => <SelectItem key={b.id} value={b.slug}>{b.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={filterStore} onValueChange={setFilterStore}>
           <SelectTrigger className="w-[180px]"><SelectValue placeholder="Mağaza" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tümü</SelectItem>
-            {stores.map(s => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}
+            {stores.map(s => <SelectItem key={s.id} value={s.slug}>{s.name}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

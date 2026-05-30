@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const active = searchParams.get('active')
     const flat = searchParams.get('flat')
     const where: any = {}
-    if (active !== null) where.isActive = active === 'true'
+    if (active !== null && active !== '') where.isActive = active === 'true'
 
     if (flat === 'true') {
       // Return all categories as flat list for admin

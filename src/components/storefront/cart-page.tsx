@@ -39,8 +39,12 @@ export default function CartPage() {
 
   async function handleApplyCoupon() {
     if (!couponInput.trim()) return
-    await applyCoupon(couponInput.trim())
-    toast({ title: 'Kupon kodu uygulandı' })
+    const success = await applyCoupon(couponInput.trim())
+    if (success) {
+      toast({ title: 'Kupon kodu uygulandı' })
+    } else {
+      toast({ title: 'Geçersiz kupon', description: 'Kupon kodu geçerli değil veya süresi dolmuş', variant: 'destructive' })
+    }
   }
 
   const subtotal = getSubtotal()
@@ -231,7 +235,7 @@ export default function CartPage() {
               {shipping === 0 && (
                 <p className="text-xs text-[#3CB371] text-center">🎉 Ücretsiz kargo!</p>
               )}
-              {shipping > 0 && (
+              {shipping > 0 && subtotal < 200 && (
                 <p className="text-xs text-gray-400 text-center">
                   {formatPrice(200 - subtotal)} daha ekleyin, kargo bedava!
                 </p>

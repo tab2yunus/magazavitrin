@@ -6,7 +6,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const active = searchParams.get('active')
     const where: any = {}
-    if (active !== null) where.isActive = active === 'true'
+    if (active !== null && active !== '') where.isActive = active === 'true'
 
     const campaigns = await db.campaign.findMany({
       where,

@@ -46,7 +46,7 @@ export default function CampaignsTab() {
 
   const fetchCampaigns = useCallback(() => {
     setLoading(true)
-    fetch('/api/campaigns?active=')
+    fetch('/api/campaigns')
       .then(r => r.json())
       .then(d => setCampaigns(Array.isArray(d) ? d : []))
       .catch(() => toast.error('Kampanyalar yüklenemedi'))
