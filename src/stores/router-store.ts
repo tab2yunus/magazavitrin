@@ -19,6 +19,24 @@ export type Route =
   | { page: 'order-success'; orderNumber: string }
   | { page: 'admin'; tab?: string }
 
+function parseRouteFromHash(): Route {
+  if (typeof window === 'undefined') return { page: 'home' }
+  const raw = window.location.hash.slice(1)
+  if (!raw) return { page: 'home' }
+  try {
+    // Browser may URL-encode the hash, so decode first
+    const decoded = decodeURIComponent(raw)
+    return JSON.parse(decoded) as Route
+  } catch {
+    try {
+      // Fallback: try parsing raw value directly
+      return JSON.parse(raw) as Route
+    } catch {
+      return { page: 'home' }
+    }
+  }
+}
+
 interface RouterState {
   route: Route
   navigate: (route: Route) => void
@@ -26,22 +44,12 @@ interface RouterState {
 }
 
 export const useRouterStore = create<RouterState>((set) => {
-  const getInitialRoute = (): Route => {
-    if (typeof window === 'undefined') return { page: 'home' }
-    const hash = window.location.hash.slice(1)
-    if (!hash) return { page: 'home' }
-    try {
-      return JSON.parse(hash) as Route
-    } catch {
-      return { page: 'home' }
-    }
-  }
-
   return {
-    route: getInitialRoute(),
+    route: parseRouteFromHash(),
     navigate: (route: Route) => {
       set({ route })
-      window.location.hash = JSON.stringify(route)
+      // Use encodeURIComponent so the hash is safely encoded
+      window.location.hash = encodeURIComponent(JSON.stringify(route))
       window.scrollTo(0, 0)
     },
     goHome: () => {
@@ -55,16 +63,7 @@ export const useRouterStore = create<RouterState>((set) => {
 // Listen to hash changes (browser back/forward)
 if (typeof window !== 'undefined') {
   window.addEventListener('hashchange', () => {
-    const hash = window.location.hash.slice(1)
-    if (!hash) {
-      useRouterStore.setState({ route: { page: 'home' } })
-      return
-    }
-    try {
-      const route = JSON.parse(hash) as Route
-      useRouterStore.setState({ route })
-    } catch {
-      useRouterStore.setState({ route: { page: 'home' } })
-    }
+    const route = parseRouteFromHash()
+    useRouterStore.setState({ route })
   })
 }
