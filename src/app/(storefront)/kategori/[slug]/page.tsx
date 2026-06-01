@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { db } from '@/lib/db'
 import CategoryClient from './category-client'
 
 interface CategoryPageProps {
@@ -7,18 +8,14 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/categories?flat=true`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { title: 'Kategori - MağazaVitrin' }
-    
-    const cats = await res.json()
-    const cat = cats.find((c: any) => c.slug === slug)
-    
+    const cat = await db.category.findFirst({ where: { slug } })
+
     return {
       title: cat ? `${cat.name} - MağazaVitrin` : 'Kategori - MağazaVitrin',
       description: cat?.seoDescription || cat?.description || `${cat?.name || slug} kategorisindeki ürünleri keşfedin`,
-      keywords: [cat?.name, 'motosiklet', 'yedek parça', slug].filter(Boolean),
+      keywords: [cat?.name, 'motosiklet', 'yedek parça', slug].filter(Boolean) as string[],
       openGraph: {
         title: cat ? `${cat.name} - MağazaVitrin` : 'Kategori - MağazaVitrin',
         description: cat?.description || '',

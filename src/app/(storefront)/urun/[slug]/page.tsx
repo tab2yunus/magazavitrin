@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { db } from '@/lib/db'
 import ProductDetailClient from './product-detail-client'
 
 interface ProductPageProps {
@@ -7,20 +8,26 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || ''
-    const res = await fetch(`${baseUrl}/api/products/${slug}`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { title: 'Ürün - MağazaVitrin' }
-    
-    const product = await res.json()
-    
+    // Direct DB query - much faster than API call
+    const product = await db.product.findFirst({
+      where: { OR: [{ id: slug }, { slug }] },
+      include: {
+        brand: { select: { name: true } },
+        category: { select: { name: true } },
+        images: { take: 1, orderBy: { sortOrder: 'asc' } },
+      },
+    })
+
+    if (!product) return { title: 'Ürün - MağazaVitrin' }
+
     return {
-      title: product.name ? `${product.name} - MağazaVitrin` : 'Ürün - MağazaVitrin',
+      title: `${product.name} - MağazaVitrin`,
       description: product.shortDescription || product.description?.substring(0, 160) || '',
-      keywords: [product.name, product.brand?.name, product.category?.name, 'motosiklet', 'yedek parça'].filter(Boolean),
+      keywords: [product.name, product.brand?.name, product.category?.name, 'motosiklet', 'yedek parça'].filter(Boolean) as string[],
       openGraph: {
-        title: product.name || 'Ürün - MağazaVitrin',
+        title: product.name,
         description: product.shortDescription || '',
         images: product.images?.[0]?.url ? [{ url: product.images[0].url, alt: product.name }] : [],
         type: 'website',
@@ -36,13 +43,19 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
-  
-  // Fetch product for server-side JSON-LD structured data
+
+  // Fetch product for server-side JSON-LD structured data (direct DB, no API)
   let product = null
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || ''
-    const res = await fetch(`${baseUrl}/api/products/${slug}`, { next: { revalidate: 3600 } })
-    if (res.ok) product = await res.json()
+    product = await db.product.findFirst({
+      where: { OR: [{ id: slug }, { slug }] },
+      include: {
+        brand: { select: { name: true } },
+        category: { select: { name: true } },
+        store: { select: { name: true } },
+        images: { orderBy: { sortOrder: 'asc' } },
+      },
+    })
   } catch { /* ignore */ }
 
   const jsonLd = product ? {
@@ -50,7 +63,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     '@type': 'Product',
     name: product.name,
     description: product.shortDescription || product.description?.substring(0, 500) || '',
-    image: product.images?.map((img: any) => img.url) || [],
+    image: product.images?.map((img) => img.url) || [],
     brand: product.brand ? { '@type': 'Brand', name: product.brand.name } : undefined,
     offers: {
       '@type': 'Offer',
@@ -59,11 +72,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       seller: product.store ? { '@type': 'Organization', name: product.store.name } : undefined,
     },
-    aggregateRating: product.avgRating ? {
-      '@type': 'AggregateRating',
-      ratingValue: product.avgRating,
-      reviewCount: product.reviews?.length || 0,
-    } : undefined,
   } : null
 
   return (

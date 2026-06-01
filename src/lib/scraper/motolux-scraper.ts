@@ -270,10 +270,12 @@ export async function fetchProductsByCategory(category: string): Promise<Scraped
         // Image
         const imgEl = $card.find('img')
         let imgUrl = imgEl.attr('src') || ''
-        const isPlaceholder = imgUrl.includes('motoluxofficial')
+        const isPlaceholder = imgUrl.includes('motoluxofficial') || !imgUrl
         if (imgUrl && !imgUrl.startsWith('http')) {
           imgUrl = `${BASE_URL}/${imgUrl.replace(/^\.\//, '')}`
         }
+        // Filter out empty/invalid image URLs (e.g., "https://simmoto.com/bayi/storage/" with no filename)
+        const isValidImageUrl = imgUrl && !isPlaceholder && imgUrl.split('/').pop()?.includes('.')
 
         // Part code (product code)
         const partCode = $card.find('.aramadivi10').text().trim()
@@ -333,7 +335,7 @@ export async function fetchProductsByCategory(category: string): Promise<Scraped
             barcode: null, // MOTOLUX doesn't show barcode
             stock: inStock ? 1 : 0,
             supplierPrice: price,
-            imageUrls: isPlaceholder ? [] : [imgUrl],
+            imageUrls: isValidImageUrl ? [imgUrl] : [],
             sourceUrl: url,
           })
         }

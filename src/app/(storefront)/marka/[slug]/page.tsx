@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { db } from '@/lib/db'
 import BrandClient from './brand-client'
 
 interface BrandPageProps {
@@ -7,20 +8,17 @@ interface BrandPageProps {
 
 export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/brands/${slug}`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { title: 'Marka - MağazaVitrin' }
-    
-    const brand = await res.json()
-    
+    const brand = await db.brand.findFirst({ where: { slug } })
+
     return {
-      title: brand.name ? `${brand.name} - MağazaVitrin` : 'Marka - MağazaVitrin',
-      description: brand.seoDescription || brand.description || `${brand.name || slug} markasının ürünleri`,
-      keywords: [brand.name, 'motosiklet', 'yedek parça', 'marka'].filter(Boolean),
+      title: brand ? `${brand.name} - MağazaVitrin` : 'Marka - MağazaVitrin',
+      description: brand?.seoDescription || brand?.description || `${brand?.name || slug} markasının ürünleri`,
+      keywords: [brand?.name, 'motosiklet', 'yedek parça', 'marka'].filter(Boolean) as string[],
       openGraph: {
-        title: brand.name ? `${brand.name} - MağazaVitrin` : 'Marka - MağazaVitrin',
-        description: brand.description || '',
+        title: brand ? `${brand.name} - MağazaVitrin` : 'Marka - MağazaVitrin',
+        description: brand?.description || '',
       },
       alternates: {
         canonical: `/marka/${slug}`,
