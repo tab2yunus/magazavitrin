@@ -281,9 +281,22 @@ export default function ScraperTab() {
           <Button
             onClick={() => handleScrape(1000)}
             disabled={scraping}
-            className="bg-[#F27A1A] hover:bg-[#D4630E] text-white"
+            variant="outline"
+            className="border-[#F27A1A] text-[#F27A1A] hover:bg-[#FFF3E8]"
           >
             1000 Çek
+          </Button>
+          <Button
+            onClick={() => {
+              if (confirm('Tüm kategorilerden ürün çekmek uzun sürebilir. Devam etmek istiyor musunuz?')) {
+                handleScrape(0)
+              }
+            }}
+            disabled={scraping}
+            className="bg-[#F27A1A] hover:bg-[#D4630E] text-white"
+          >
+            {scraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+            Tümünü Çek
           </Button>
 
           {/* Publish button with dialog */}

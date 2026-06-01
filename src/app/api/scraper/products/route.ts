@@ -14,10 +14,11 @@ export async function GET(request: Request) {
     const where: any = { sourceSupplier: 'MOTOLUX' }
     if (search) {
       where.OR = [
-        { productName: { contains: search } },
-        { description: { contains: search } },
-        { sku: { contains: search } },
-        { brand: { contains: search } },
+        { productName: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { sku: { contains: search, mode: 'insensitive' } },
+        { brand: { contains: search, mode: 'insensitive' } },
+        { model: { contains: search, mode: 'insensitive' } },
       ]
     }
     if (category) {

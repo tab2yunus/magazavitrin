@@ -313,14 +313,18 @@ export async function fetchProductsByCategory(category: string): Promise<Scraped
         const sku = partCode || null
 
         if (partCode) {
-          // Build a more descriptive product name for SEO
+          // Build product name with MODEL NAME + DESCRIPTION for SEO
+          // e.g., "AFRİKA KING AÇMA KOLU SAĞ" instead of "AFRİKA-K50093 AÇMA KOLU SAĞ"
           let productName = partCode
-          if (description) {
-            // Combine part code with description for SEO
-            productName = `${partCode} ${description}`
+          if (model && description) {
+            // Best: Model name + description (e.g., "AFRİKA KING AÇMA KOLU SAĞ")
+            productName = `${model} ${description}`
           } else if (model) {
-            // If no description but we have model info, prepend it
+            // Model name + part code (e.g., "AFRİKA KING AFRİKA-K50093")
             productName = `${model} ${partCode}`
+          } else if (description) {
+            // Fallback: part code + description
+            productName = `${partCode} ${description}`
           }
           productName = toUpperCaseTurkish(productName)
 
