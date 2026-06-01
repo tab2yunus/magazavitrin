@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { CheckCircle, Package, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,7 +11,7 @@ interface OrderSuccessPageProps {
 }
 
 export default function OrderSuccessPage({ orderNumber }: OrderSuccessPageProps) {
-  const { navigate, goHome } = useRouterStore()
+  const router = useRouter()
 
   return (
     <div className="max-w-lg mx-auto px-4 py-16">
@@ -35,18 +36,19 @@ export default function OrderSuccessPage({ orderNumber }: OrderSuccessPageProps)
           {/* Actions */}
           <div className="space-y-3">
             <Button
-              onClick={() => navigate({ page: 'orders' })}
+              onClick={() => router.push('/siparislerim')}
               className="w-full h-11 bg-[#F27A1A] hover:bg-[#D4630E] text-white font-semibold"
             >
               <Package className="h-4 w-4 mr-2" /> Siparişlerim
             </Button>
-            <Button
-              onClick={goHome}
-              variant="outline"
-              className="w-full h-11 font-semibold"
-            >
-              Alışverişe Devam Et <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            <Link href="/">
+              <Button
+                variant="outline"
+                className="w-full h-11 font-semibold"
+              >
+                Alışverişe Devam Et <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

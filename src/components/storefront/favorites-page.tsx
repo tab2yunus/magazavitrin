@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/auth-store'
 import { Heart } from 'lucide-react'
 import ProductCard from './product-card'
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function FavoritesPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { user, fetchUser, isLoading } = useAuthStore()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -21,9 +21,9 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      navigate({ page: 'login' })
+      router.push('/giris')
     }
-  }, [isLoading, user, navigate])
+  }, [isLoading, user, router])
 
   useEffect(() => {
     async function loadFavorites() {
@@ -65,7 +65,7 @@ export default function FavoritesPage() {
           <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#1A2744] mb-2">Favori ürününüz yok</h2>
           <p className="text-gray-500 mb-6">Beğendiğiniz ürünleri favorilere ekleyin!</p>
-          <Button onClick={() => navigate({ page: 'home' })} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+          <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
             Alışverişe Başla
           </Button>
         </div>

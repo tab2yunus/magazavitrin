@@ -1,76 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouterStore } from '@/stores/router-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { useCartStore } from '@/stores/cart-store'
 import StorefrontHeader from '@/components/storefront/storefront-header'
 import StorefrontFooter from '@/components/storefront/storefront-footer'
-import HomePage from '@/components/storefront/home-page'
-import ProductDetailPage from '@/components/storefront/product-detail-page'
-import CategoryPage from '@/components/storefront/category-page'
-import BrandPage from '@/components/storefront/brand-page'
-import StorePage from '@/components/storefront/store-page'
-import CartPage from '@/components/storefront/cart-page'
-import CheckoutPage from '@/components/storefront/checkout-page'
-import SearchPage from '@/components/storefront/search-page'
-import LoginPage from '@/components/storefront/login-page'
-import RegisterPage from '@/components/storefront/register-page'
-import AccountPage from '@/components/storefront/account-page'
-import OrdersPage from '@/components/storefront/orders-page'
-import OrderDetailPage from '@/components/storefront/order-detail-page'
-import FavoritesPage from '@/components/storefront/favorites-page'
-import ComparisonsPage from '@/components/storefront/comparisons-page'
-import OrderSuccessPage from '@/components/storefront/order-success-page'
-import AdminPanel from '@/components/admin/admin-panel'
 import { Button } from '@/components/ui/button'
 import { Database, Loader2 } from 'lucide-react'
 
-function PageRouter() {
-  const { route } = useRouterStore()
-
-  switch (route.page) {
-    case 'home':
-      return <HomePage />
-    case 'product':
-      return <ProductDetailPage slug={route.slug} />
-    case 'category':
-      return <CategoryPage slug={route.slug} />
-    case 'brand':
-      return <BrandPage slug={route.slug} />
-    case 'store':
-      return <StorePage slug={route.slug} />
-    case 'cart':
-      return <CartPage />
-    case 'checkout':
-      return <CheckoutPage />
-    case 'search':
-      return <SearchPage query={route.q} />
-    case 'login':
-      return <LoginPage />
-    case 'register':
-      return <RegisterPage />
-    case 'account':
-      return <AccountPage />
-    case 'orders':
-      return <OrdersPage />
-    case 'order-detail':
-      return <OrderDetailPage id={route.id} />
-    case 'favorites':
-      return <FavoritesPage />
-    case 'comparisons':
-      return <ComparisonsPage />
-    case 'order-success':
-      return <OrderSuccessPage orderNumber={route.orderNumber} />
-    case 'admin':
-      return <AdminPanel onBack={() => useRouterStore.getState().goHome()} />
-    default:
-      return <HomePage />
-  }
-}
-
-export default function Home() {
-  const { route } = useRouterStore()
+export default function StorefrontLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { fetchUser, user } = useAuthStore()
   const { fetchCart } = useCartStore()
   const [needsSeed, setNeedsSeed] = useState(false)
@@ -95,7 +37,7 @@ export default function Home() {
     checkSeed()
     fetchUser()
     fetchCart()
-  }, [])
+  }, [fetchUser, fetchCart])
 
   async function handleSeed() {
     setSeeding(true)
@@ -113,8 +55,6 @@ export default function Home() {
       setSeeding(false)
     }
   }
-
-  const isAdmin = route.page === 'admin'
 
   if (checking) {
     return (
@@ -159,15 +99,11 @@ export default function Home() {
     )
   }
 
-  if (isAdmin) {
-    return <AdminPanel onBack={() => useRouterStore.getState().goHome()} />
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <StorefrontHeader />
       <main className="flex-1">
-        <PageRouter />
+        {children}
       </main>
       <StorefrontFooter />
     </div>

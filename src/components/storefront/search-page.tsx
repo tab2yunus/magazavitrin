@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Search, ChevronRight } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import ProductCard from './product-card'
 import type { Product, Category, Store as StoreType, Brand } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -13,7 +14,7 @@ interface SearchPageProps {
 }
 
 export default function SearchPage({ query }: SearchPageProps) {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [stores, setStores] = useState<StoreType[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -44,7 +45,7 @@ export default function SearchPage({ query }: SearchPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <button onClick={() => navigate({ page: 'home' })} className="hover:text-[#F27A1A]">Ana Sayfa</button>
+        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <span className="text-gray-800 font-medium">Arama</span>
       </nav>
@@ -73,15 +74,15 @@ export default function SearchPage({ query }: SearchPageProps) {
                 <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Kategoriler</h3>
                 <div className="space-y-1.5">
                   {categories.map((cat) => (
-                    <button
+                    <Link
                       key={cat.id}
-                      onClick={() => navigate({ page: 'category', slug: cat.slug })}
+                      href={`/kategori/${cat.slug}`}
                       className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1 flex items-center justify-between"
                     >
                       <span className="flex items-center gap-1.5">
                         <span>{cat.icon}</span> {cat.name}
                       </span>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -93,13 +94,13 @@ export default function SearchPage({ query }: SearchPageProps) {
                 <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Markalar</h3>
                 <div className="space-y-1.5">
                   {brands.map((brand) => (
-                    <button
+                    <Link
                       key={brand.id}
-                      onClick={() => navigate({ page: 'brand', slug: brand.slug })}
-                      className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1"
+                      href={`/marka/${brand.slug}`}
+                      className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1 block"
                     >
                       {brand.name}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -111,13 +112,13 @@ export default function SearchPage({ query }: SearchPageProps) {
                 <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Mağazalar</h3>
                 <div className="space-y-1.5">
                   {stores.map((store) => (
-                    <button
+                    <Link
                       key={store.id}
-                      onClick={() => navigate({ page: 'store', slug: store.slug })}
-                      className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1"
+                      href={`/magaza/${store.slug}`}
+                      className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1 block"
                     >
                       {store.name}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -139,7 +140,7 @@ export default function SearchPage({ query }: SearchPageProps) {
                 <p className="text-gray-500 mb-4">
                   &ldquo;{query}&rdquo; ile eşleşen ürün bulunamadı. Farklı bir arama deneyin.
                 </p>
-                <Button onClick={() => navigate({ page: 'home' })} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+                <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
                   Ana Sayfaya Dön
                 </Button>
               </div>

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown, Shield } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
@@ -14,7 +15,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/s
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function StorefrontHeader() {
-  const { route, navigate, goHome } = useRouterStore()
+  const router = useRouter()
   const { items, fetchCart } = useCartStore()
   const { user, fetchUser } = useAuthStore()
   const { fetchFavorites } = useFavoritesStore()
@@ -52,14 +53,14 @@ export default function StorefrontHeader() {
 
   function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' && searchQuery.trim()) {
-      navigate({ page: 'search', q: searchQuery.trim() })
+      router.push(`/ara?q=${encodeURIComponent(searchQuery.trim())}`)
       setMobileSearchOpen(false)
     }
   }
 
   function handleSearchClick() {
     if (searchQuery.trim()) {
-      navigate({ page: 'search', q: searchQuery.trim() })
+      router.push(`/ara?q=${encodeURIComponent(searchQuery.trim())}`)
       setMobileSearchOpen(false)
     }
   }
@@ -93,11 +94,9 @@ export default function StorefrontHeader() {
                 <div className="py-2">
                   {categories.map((cat) => (
                     <div key={cat.id}>
-                      <button
-                        onClick={() => {
-                          navigate({ page: 'category', slug: cat.slug })
-                          setMobileMenuOpen(false)
-                        }}
+                      <Link
+                        href={`/kategori/${cat.slug}`}
+                        onClick={() => setMobileMenuOpen(false)}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#FFF3E8] text-left text-sm font-medium"
                       >
                         <span className="flex items-center gap-2">
@@ -108,26 +107,25 @@ export default function StorefrontHeader() {
                           <ChevronDown
                             className="h-4 w-4 transition-transform"
                             onClick={(e) => {
+                              e.preventDefault()
                               e.stopPropagation()
                               setCategoryDropdown(categoryDropdown === cat.id ? null : cat.id)
                             }}
                           />
                         )}
-                      </button>
+                      </Link>
                       {cat.children && cat.children.length > 0 && categoryDropdown === cat.id && (
                         <div className="bg-gray-50">
                           {cat.children.map((child) => (
-                            <button
+                            <Link
                               key={child.id}
-                              onClick={() => {
-                                navigate({ page: 'category', slug: child.slug })
-                                setMobileMenuOpen(false)
-                              }}
+                              href={`/kategori/${child.slug}`}
+                              onClick={() => setMobileMenuOpen(false)}
                               className="w-full flex items-center gap-2 px-8 py-2.5 hover:bg-[#FFF3E8] text-sm text-gray-600"
                             >
                               <span>{child.icon}</span>
                               <span>{child.name}</span>
-                            </button>
+                            </Link>
                           ))}
                         </div>
                       )}
@@ -139,12 +137,12 @@ export default function StorefrontHeader() {
           </Sheet>
 
           {/* Logo */}
-          <button onClick={goHome} className="shrink-0 flex items-center gap-1">
+          <Link href="/" className="shrink-0 flex items-center gap-1">
             <span className="text-2xl font-extrabold">
               <span className="text-[#F27A1A]">Mağaza</span>
               <span className="text-[#1A2744]">Vitrin</span>
             </span>
-          </button>
+          </Link>
 
           {/* Desktop search */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-4">
@@ -179,48 +177,54 @@ export default function StorefrontHeader() {
           {/* Action icons */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {user && (user.role === 'super_admin' || user.role === 'editor') && (
+              <Link
+                href="/admin"
+                title="Yönetim Paneli"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                >
+                  <Shield className="h-5 w-5 text-[#F27A1A]" />
+                </Button>
+              </Link>
+            )}
+
+            <Link href="/favorilerim">
               <Button
                 variant="ghost"
                 size="icon"
                 className="relative"
-                onClick={() => navigate({ page: 'admin' })}
-                title="Yönetim Paneli"
               >
-                <Shield className="h-5 w-5 text-[#F27A1A]" />
+                <Heart className="h-5 w-5 text-gray-600" />
               </Button>
-            )}
+            </Link>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => navigate({ page: 'favorites' })}
-            >
-              <Heart className="h-5 w-5 text-gray-600" />
-            </Button>
+            <Link href={user ? '/hesabim' : '/giris'}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+              >
+                <User className="h-5 w-5 text-gray-600" />
+              </Button>
+            </Link>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => user ? navigate({ page: 'account' }) : navigate({ page: 'login' })}
-            >
-              <User className="h-5 w-5 text-gray-600" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => navigate({ page: 'cart' })}
-            >
-              <ShoppingCart className="h-5 w-5 text-gray-600" />
-              {cartItemCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-[10px] bg-[#F27A1A] text-white border-0">
-                  {cartItemCount}
-                </Badge>
-              )}
-            </Button>
+            <Link href="/sepet">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+              >
+                <ShoppingCart className="h-5 w-5 text-gray-600" />
+                {cartItemCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-[10px] bg-[#F27A1A] text-white border-0">
+                    {cartItemCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -251,8 +255,8 @@ export default function StorefrontHeader() {
           <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar py-1">
             {categories.map((cat) => (
               <div key={cat.id} className="relative group">
-                <button
-                  onClick={() => navigate({ page: 'category', slug: cat.slug })}
+                <Link
+                  href={`/kategori/${cat.slug}`}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 hover:text-[#F27A1A] whitespace-nowrap transition-colors"
                 >
                   <span>{cat.icon}</span>
@@ -260,18 +264,18 @@ export default function StorefrontHeader() {
                   {cat.children && cat.children.length > 0 && (
                     <ChevronDown className="h-3.5 w-3.5" />
                   )}
-                </button>
+                </Link>
                 {cat.children && cat.children.length > 0 && (
                   <div className="absolute top-full left-0 bg-white shadow-lg rounded-b-lg border border-gray-100 py-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                     {cat.children.map((child) => (
-                      <button
+                      <Link
                         key={child.id}
-                        onClick={() => navigate({ page: 'category', slug: child.slug })}
+                        href={`/kategori/${child.slug}`}
                         className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-[#FFF3E8] hover:text-[#F27A1A] flex items-center gap-2"
                       >
                         <span>{child.icon}</span>
                         <span>{child.name}</span>
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 )}

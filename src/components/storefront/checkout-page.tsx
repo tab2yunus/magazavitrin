@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { formatPrice } from '@/lib/storefront-utils'
@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Textarea } from '@/components/ui/textarea'
 
 export default function CheckoutPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { items, getSubtotal, getShippingCost, getTotal, couponDiscount, clearCart } = useCartStore()
   const { user } = useAuthStore()
   const { toast } = useToast()
@@ -61,7 +61,7 @@ export default function CheckoutPage() {
       if (res.ok) {
         const order = await res.json()
         await clearCart()
-        navigate({ page: 'order-success', orderNumber: order.orderNumber })
+        router.push(`/siparis-basarili?orderNumber=${encodeURIComponent(order.orderNumber)}`)
       } else {
         const data = await res.json()
         toast({
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-[#1A2744] mb-2">Sepetiniz Boş</h2>
         <p className="text-gray-500 mb-6">Önce sepetinize ürün eklemeniz gerekiyor.</p>
-        <Button onClick={() => navigate({ page: 'home' })} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
           Alışverişe Başla
         </Button>
       </div>

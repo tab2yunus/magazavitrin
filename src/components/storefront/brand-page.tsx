@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import ProductCard from './product-card'
 import type { Brand, Product } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -14,7 +15,7 @@ interface BrandPageProps {
 }
 
 export default function BrandPage({ slug }: BrandPageProps) {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const [brand, setBrand] = useState<Brand & { products?: Product[] } | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,7 +65,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-[#1A2744]">Marka bulunamadı</h2>
-        <Button onClick={() => navigate({ page: 'home' })} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Ana Sayfaya Dön
         </Button>
       </div>
@@ -75,7 +76,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <button onClick={() => navigate({ page: 'home' })} className="hover:text-[#F27A1A]">Ana Sayfa</button>
+        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <span className="text-gray-800 font-medium">{brand.name}</span>
       </nav>

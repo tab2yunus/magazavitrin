@@ -1,11 +1,10 @@
 'use client'
 
-import { useRouterStore } from '@/stores/router-store'
+import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function StorefrontFooter() {
-  const { navigate, goHome } = useRouterStore()
   const { user } = useAuthStore()
 
   return (
@@ -17,24 +16,24 @@ export default function StorefrontFooter() {
             <h3 className="font-bold text-lg mb-4 text-[#F27A1A]">Kurumsal</h3>
             <ul className="space-y-2.5">
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Hakkımızda
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   İletişim
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Kariyer
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Basın
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -44,24 +43,24 @@ export default function StorefrontFooter() {
             <h3 className="font-bold text-lg mb-4 text-[#F27A1A]">Müşteri Hizmetleri</h3>
             <ul className="space-y-2.5">
               <li>
-                <button onClick={() => navigate({ page: 'orders' })} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/siparislerim" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Sipariş Takibi
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   İade Koşulları
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Sıkça Sorulan Sorular
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={goHome} className="text-gray-300 hover:text-white text-sm transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
                   Gizlilik Politikası
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -72,12 +71,12 @@ export default function StorefrontFooter() {
             <ul className="space-y-2.5">
               {['Elektronik', 'Moda', 'Ev & Yaşam', 'Spor & Outdoor', 'Kozmetik'].map((cat) => (
                 <li key={cat}>
-                  <button
-                    onClick={() => navigate({ page: 'category', slug: cat.toLowerCase().replace(/[^a-z0-9ğüşıöçĞÜŞİÖÇ]+/g, '-').replace(/(^-|-$)/g, '') })}
+                  <Link
+                    href={`/kategori/${cat.toLowerCase().replace(/[^a-z0-9ğüşıöçĞÜŞİÖÇ]+/g, '-').replace(/(^-|-$)/g, '')}`}
                     className="text-gray-300 hover:text-white text-sm transition-colors"
                   >
                     {cat}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -126,12 +125,12 @@ export default function StorefrontFooter() {
             <button className="hover:text-white transition-colors">KVKK</button>
             <button className="hover:text-white transition-colors">Çerez Politikası</button>
             {user && (user.role === 'super_admin' || user.role === 'editor') && (
-              <button
-                onClick={() => navigate({ page: 'admin' })}
+              <Link
+                href="/admin"
                 className="text-[#F27A1A] hover:text-[#FFB366] transition-colors font-semibold"
               >
                 Yönetim Paneli
-              </button>
+              </Link>
             )}
           </div>
         </div>

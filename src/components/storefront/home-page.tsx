@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ChevronLeft, ChevronRight, ArrowRight, Store, Users } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import ProductCard from './product-card'
 import type { Product, Category, Store as StoreType, Brand, Banner, Campaign } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -10,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 export default function HomePage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const [banners, setBanners] = useState<Banner[]>([])
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -160,10 +161,10 @@ export default function HomePage() {
       {campaigns.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {campaigns.map((campaign) => (
-            <button
+            <Link
               key={campaign.id}
-              onClick={() => campaign.link && navigate({ page: 'search', q: campaign.title })}
-              className="relative rounded-xl overflow-hidden group cursor-pointer border border-gray-100 hover:shadow-md transition-shadow"
+              href={campaign.link ? `/ara?q=${encodeURIComponent(campaign.title)}` : `/ara?q=${encodeURIComponent(campaign.title)}`}
+              className="relative rounded-xl overflow-hidden group cursor-pointer border border-gray-100 hover:shadow-md transition-shadow block"
             >
               {campaign.image ? (
                 <img src={campaign.image} alt={campaign.title} className="w-full h-32 object-cover" />
@@ -182,7 +183,7 @@ export default function HomePage() {
                   {campaign.discountText}
                 </div>
               )}
-            </button>
+            </Link>
           ))}
         </div>
       )}
@@ -198,16 +199,16 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-4">
             {categories.slice(0, 8).map((cat) => (
-              <button
+              <Link
                 key={cat.id}
-                onClick={() => navigate({ page: 'category', slug: cat.slug })}
+                href={`/kategori/${cat.slug}`}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-[#FFF3E8] transition-colors group"
               >
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FFF3E8] group-hover:bg-white flex items-center justify-center text-2xl shadow-sm transition-colors">
                   {cat.icon || '📦'}
                 </div>
                 <span className="text-xs font-medium text-gray-700 text-center line-clamp-2">{cat.name}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </section>
@@ -222,9 +223,9 @@ export default function HomePage() {
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-4 pb-4">
               {stores.slice(0, 8).map((store) => (
-                <button
+                <Link
                   key={store.id}
-                  onClick={() => navigate({ page: 'store', slug: store.slug })}
+                  href={`/magaza/${store.slug}`}
                   className="inline-flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-[#F27A1A] hover:shadow-md transition-all min-w-[160px] shrink-0"
                 >
                   <div className="w-16 h-16 rounded-full bg-[#F5F5F5] flex items-center justify-center text-xl font-bold text-[#F27A1A]">
@@ -242,7 +243,7 @@ export default function HomePage() {
                     <Users className="h-3 w-3" />
                     <span>{store.followerCount.toLocaleString('tr-TR')}</span>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
             <ScrollBar orientation="horizontal" />
@@ -257,7 +258,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-[#1A2744]">Çok Satan Ürünler</h2>
             <Button
               variant="ghost"
-              onClick={() => navigate({ page: 'search', q: 'çok satan' })}
+              onClick={() => router.push(`/ara?q=${encodeURIComponent('çok satan')}`)}
               className="text-[#F27A1A] text-sm"
             >
               Tümünü Gör <ArrowRight className="h-4 w-4 ml-1" />
@@ -278,7 +279,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-[#1A2744]">Yeni Ürünler</h2>
             <Button
               variant="ghost"
-              onClick={() => navigate({ page: 'search', q: 'yeni' })}
+              onClick={() => router.push(`/ara?q=${encodeURIComponent('yeni')}`)}
               className="text-[#F27A1A] text-sm"
             >
               Tümünü Gör <ArrowRight className="h-4 w-4 ml-1" />
@@ -299,7 +300,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-[#1A2744]">İndirimli Ürünler</h2>
             <Button
               variant="ghost"
-              onClick={() => navigate({ page: 'search', q: 'indirim' })}
+              onClick={() => router.push(`/ara?q=${encodeURIComponent('indirim')}`)}
               className="text-[#F27A1A] text-sm"
             >
               Tümünü Gör <ArrowRight className="h-4 w-4 ml-1" />
@@ -322,13 +323,13 @@ export default function HomePage() {
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-4 pb-4">
               {brands.map((brand) => (
-                <button
+                <Link
                   key={brand.id}
-                  onClick={() => navigate({ page: 'brand', slug: brand.slug })}
+                  href={`/marka/${brand.slug}`}
                   className="inline-flex items-center justify-center px-6 py-4 rounded-xl border border-gray-100 hover:border-[#F27A1A] hover:shadow-md transition-all min-w-[140px] shrink-0"
                 >
                   <span className="font-bold text-sm text-[#1A2744]">{brand.name}</span>
-                </button>
+                </Link>
               ))}
             </div>
             <ScrollBar orientation="horizontal" />

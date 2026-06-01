@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Trash2, Minus, Plus, ShoppingCart, Tag, ArrowRight } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { formatPrice } from '@/lib/storefront-utils'
 import { Button } from '@/components/ui/button'
@@ -13,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
 
 export default function CartPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { items, fetchCart, updateItem, removeItem, applyCoupon, getSubtotal, getShippingCost, getTotal, couponCode, couponDiscount } = useCartStore()
   const { toast } = useToast()
   const [couponInput, setCouponInput] = useState('')
@@ -73,7 +74,7 @@ export default function CartPage() {
         <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-[#1A2744] mb-2">Sepetiniz Boş</h2>
         <p className="text-gray-500 mb-6">Hemen alışverişe başlayın!</p>
-        <Button onClick={() => navigate({ page: 'home' })} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
           Alışverişe Başla
         </Button>
       </div>
@@ -98,31 +99,31 @@ export default function CartPage() {
                 <CardContent className="p-4">
                   <div className="flex gap-4">
                     {/* Image */}
-                    <button
-                      onClick={() => navigate({ page: 'product', slug: product.slug })}
+                    <Link
+                      href={`/urun/${product.slug}`}
                       className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 bg-[#F5F5F5]"
                     >
                       <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                    </button>
+                    </Link>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <button
-                        onClick={() => navigate({ page: 'product', slug: product.slug })}
+                      <Link
+                        href={`/urun/${product.slug}`}
                         className="text-sm font-medium text-[#1A2744] hover:text-[#F27A1A] line-clamp-2 text-left"
                       >
                         {product.name}
-                      </button>
+                      </Link>
                       {product.brand && (
                         <p className="text-xs text-gray-500 mt-0.5">{product.brand.name}</p>
                       )}
                       {product.store && (
-                        <button
-                          onClick={() => navigate({ page: 'store', slug: product.store!.slug })}
+                        <Link
+                          href={`/magaza/${product.store!.slug}`}
                           className="text-xs text-blue-600 hover:underline"
                         >
                           {product.store.name}
-                        </button>
+                        </Link>
                       )}
 
                       <div className="flex items-center justify-between mt-3">
@@ -242,7 +243,7 @@ export default function CartPage() {
               )}
 
               <Button
-                onClick={() => navigate({ page: 'checkout' })}
+                onClick={() => router.push('/odeme')}
                 className="w-full h-12 text-base font-bold bg-[#F27A1A] hover:bg-[#D4630E]"
               >
                 Sipariş Ver <ArrowRight className="h-4 w-4 ml-2" />

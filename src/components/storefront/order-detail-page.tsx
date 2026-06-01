@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Package, MapPin, CreditCard, Truck, ChevronRight, ArrowLeft } from 'lucide-react'
 import type { Order } from '@/types'
 import { formatPrice, getStatusColor, getStatusText, getPaymentMethodText } from '@/lib/storefront-utils'
@@ -16,7 +17,7 @@ interface OrderDetailPageProps {
 }
 
 export default function OrderDetailPage({ id }: OrderDetailPageProps) {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -50,7 +51,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-[#1A2744]">Sipariş bulunamadı</h2>
-        <Button onClick={() => navigate({ page: 'orders' })} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/siparislerim')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Siparişlerime Dön
         </Button>
       </div>
@@ -61,7 +62,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
     <div className="max-w-4xl mx-auto px-4 py-4">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ page: 'orders' })}>
+        <Button variant="ghost" size="icon" onClick={() => router.push('/siparislerim')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

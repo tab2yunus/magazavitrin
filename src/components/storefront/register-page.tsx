@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
 import { Mail, Lock, UserPlus, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 
 export default function RegisterPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { register } = useAuthStore()
   const { toast } = useToast()
   const [name, setName] = useState('')
@@ -40,7 +41,7 @@ export default function RegisterPage() {
       const success = await register(name, email, password)
       if (success) {
         toast({ title: 'Hoş geldiniz!', description: 'Hesabınız oluşturuldu' })
-        navigate({ page: 'account' })
+        router.push('/hesabim')
       } else {
         toast({ title: 'Kayıt başarısız', description: 'Bu e-posta adresi zaten kayıtlı olabilir', variant: 'destructive' })
       }
@@ -56,10 +57,10 @@ export default function RegisterPage() {
       <Card>
         <CardHeader className="text-center">
           <div className="mx-auto mb-2">
-            <span className="text-3xl font-extrabold">
+            <Link href="/" className="text-3xl font-extrabold">
               <span className="text-[#F27A1A]">Mağaza</span>
               <span className="text-[#1A2744]">Vitrin</span>
-            </span>
+            </Link>
           </div>
           <CardTitle className="text-xl">Kayıt Ol</CardTitle>
         </CardHeader>
@@ -144,12 +145,12 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               Zaten hesabınız var mı?{' '}
-              <button
-                onClick={() => navigate({ page: 'login' })}
+              <Link
+                href="/giris"
                 className="text-[#F27A1A] font-semibold hover:underline"
               >
                 Giriş yapın
-              </button>
+              </Link>
             </p>
           </div>
         </CardContent>

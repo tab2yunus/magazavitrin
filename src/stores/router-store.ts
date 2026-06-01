@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+// Keep the Route type for backward compatibility with components that still reference it
 export type Route = 
   | { page: 'home' }
   | { page: 'category'; slug: string }
@@ -19,25 +20,50 @@ export type Route =
   | { page: 'order-success'; orderNumber: string }
   | { page: 'admin'; tab?: string }
 
-function parseRouteFromHash(): Route {
-  if (typeof window === 'undefined') return { page: 'home' }
-  const raw = window.location.hash.slice(1)
-  if (!raw) return { page: 'home' }
-  try {
-    // Browser may URL-encode the hash, so decode first
-    const decoded = decodeURIComponent(raw)
-    return JSON.parse(decoded) as Route
-  } catch {
-    try {
-      // Fallback: try parsing raw value directly
-      return JSON.parse(raw) as Route
-    } catch {
-      return { page: 'home' }
-    }
+// Map route objects to SEO-friendly Next.js paths
+export function routeToPath(route: Route): string {
+  switch (route.page) {
+    case 'home':
+      return '/'
+    case 'product':
+      return `/urun/${route.slug}`
+    case 'category':
+      return `/kategori/${route.slug}`
+    case 'brand':
+      return `/marka/${route.slug}`
+    case 'store':
+      return `/magaza/${route.slug}`
+    case 'search':
+      return `/ara?q=${encodeURIComponent(route.q)}`
+    case 'cart':
+      return '/sepet'
+    case 'checkout':
+      return '/odeme'
+    case 'login':
+      return '/giris'
+    case 'register':
+      return '/kayit'
+    case 'account':
+      return '/hesabim'
+    case 'orders':
+      return '/siparislerim'
+    case 'order-detail':
+      return `/siparislerim/${route.id}`
+    case 'favorites':
+      return '/favorilerim'
+    case 'comparisons':
+      return '/karsilastirma'
+    case 'order-success':
+      return `/siparis-basarili?orderNumber=${encodeURIComponent(route.orderNumber)}`
+    case 'admin':
+      return '/admin'
+    default:
+      return '/'
   }
 }
 
 interface RouterState {
+  // Keep route state for components that still use it (e.g., highlighting active nav)
   route: Route
   navigate: (route: Route) => void
   goHome: () => void
@@ -45,25 +71,18 @@ interface RouterState {
 
 export const useRouterStore = create<RouterState>((set) => {
   return {
-    route: parseRouteFromHash(),
+    route: { page: 'home' },
     navigate: (route: Route) => {
       set({ route })
-      // Use encodeURIComponent so the hash is safely encoded
-      window.location.hash = encodeURIComponent(JSON.stringify(route))
-      window.scrollTo(0, 0)
+      const path = routeToPath(route)
+      // Use Next.js-compatible navigation via window.location
+      // Components should prefer using Link or router.push() from next/navigation
+      // But this provides a fallback for components that call navigate() directly
+      window.location.href = path
     },
     goHome: () => {
       set({ route: { page: 'home' } })
-      window.location.hash = ''
-      window.scrollTo(0, 0)
+      window.location.href = '/'
     },
   }
 })
-
-// Listen to hash changes (browser back/forward)
-if (typeof window !== 'undefined') {
-  window.addEventListener('hashchange', () => {
-    const route = parseRouteFromHash()
-    useRouterStore.setState({ route })
-  })
-}

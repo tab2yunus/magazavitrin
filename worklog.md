@@ -149,3 +149,68 @@ Stage Summary:
 - 3807 products imported, 2227 active (with stock), rest inactive (no stock)
 - MOTOLUX store auto-created with slug 'motolux'
 - 43 categories and 26 brands auto-created from imported data
+
+---
+Task ID: 9
+Agent: Main Orchestrator
+Task: Convert hash-based SPA router to Next.js App Router with SEO-friendly URLs
+
+Work Log:
+- Removed old hash-based page.tsx (single-page router using Zustand + window.location.hash)
+- Created (storefront) route group layout with StorefrontHeader + StorefrontFooter + seed detection
+- Created 17 Next.js App Router page files with SEO-friendly Turkish URL structure:
+  - / → Home page
+  - /urun/[slug] → Product detail (with server-side generateMetadata + JSON-LD structured data)
+  - /kategori/[slug] → Category page (with server-side generateMetadata)
+  - /marka/[slug] → Brand page (with server-side generateMetadata)
+  - /magaza/[slug] → Store page (with server-side generateMetadata)
+  - /ara?q= → Search page
+  - /sepet → Cart page
+  - /odeme → Checkout page
+  - /giris → Login page
+  - /kayit → Register page
+  - /hesabim → Account page
+  - /siparislerim → Orders page
+  - /siparislerim/[id] → Order detail page
+  - /favorilerim → Favorites page
+  - /karsilastirma → Comparisons page
+  - /siparis-basarili?orderNumber= → Order success page
+  - /admin → Admin panel (own internal tab routing)
+- Updated router-store.ts: removed hash-based logic, added routeToPath() utility, navigate() uses window.location.href
+- Updated ALL 19 storefront components to use Next.js Link and useRouter:
+  - storefront-header.tsx: all navigation uses Link, search uses router.push()
+  - product-card.tsx: wrapped in Link for product pages, store link uses Link
+  - product-detail-page.tsx: breadcrumbs use Link, brand/store links use Link
+  - home-page.tsx: categories/stores/brands use Link, search uses router.push()
+  - search-page.tsx: breadcrumb uses Link, sidebar categories/brands/stores use Link
+  - category-page.tsx: breadcrumbs and subcategories use Link
+  - brand-page.tsx: breadcrumb uses Link
+  - store-page.tsx: breadcrumb uses Link
+  - cart-page.tsx: product links use Link, checkout uses router.push()
+  - checkout-page.tsx: order success redirects via router.push()
+  - login-page.tsx: register link uses Link, success redirect uses router.push()
+  - register-page.tsx: login link uses Link, success redirect uses router.push()
+  - account-page.tsx: quick links use Link, admin link uses Link
+  - orders-page.tsx: order cards use Link
+  - order-detail-page.tsx: back button uses router.push()
+  - favorites-page.tsx: redirect uses router.push()
+  - comparisons-page.tsx: product names use Link
+  - order-success-page.tsx: buttons use Link and router.push()
+  - storefront-footer.tsx: all navigation uses Link
+- Added SEO features:
+  - Server-side generateMetadata for product, category, brand, and store pages
+  - JSON-LD structured data for product pages (Product schema with offers, ratings)
+  - Canonical URLs for product, category, brand, and store pages
+  - OpenGraph meta tags for social sharing
+  - Static metadata for cart, checkout, login, register, account, orders, favorites, comparisons pages
+- Admin panel works at /admin with its own internal tab routing
+- ESLint: 0 errors
+- All routes tested and returning HTTP 200
+
+Stage Summary:
+- Full conversion from hash-based SPA to Next.js App Router complete
+- SEO-friendly URLs: /urun/, /kategori/, /marka/, /magaza/, /ara, /sepet, /odeme, /giris, /kayit, /hesabim, /siparislerim, /favorilerim, /karsilastirma
+- Server-side metadata for SEO on dynamic pages
+- JSON-LD structured data for product pages
+- All navigation uses Next.js Link (SEO-friendly, supports middle-click/Ctrl+click)
+- ESLint: 0 errors

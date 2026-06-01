@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
 import { useComparisonStore } from '@/stores/favorites-store'
 import { BarChart3, X, Trash2 } from 'lucide-react'
@@ -12,7 +13,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ComparisonsPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { user, fetchUser, isLoading } = useAuthStore()
   const { clearComparisons, toggleComparison, fetchComparisons } = useComparisonStore()
   const [products, setProducts] = useState<Product[]>([])
@@ -24,9 +25,9 @@ export default function ComparisonsPage() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      navigate({ page: 'login' })
+      router.push('/giris')
     }
-  }, [isLoading, user, navigate])
+  }, [isLoading, user, router])
 
   useEffect(() => {
     async function loadComparisons() {
@@ -80,7 +81,7 @@ export default function ComparisonsPage() {
           <BarChart3 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#1A2744] mb-2">Karşılaştırma listeniz boş</h2>
           <p className="text-gray-500 mb-6">Ürün detay sayfasından karşılaştırmaya ekleyin!</p>
-          <Button onClick={() => navigate({ page: 'home' })} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+          <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
             Alışverişe Başla
           </Button>
         </div>
@@ -106,12 +107,12 @@ export default function ComparisonsPage() {
                           <div className="w-full h-full flex items-center justify-center text-gray-400">📦</div>
                         )}
                       </div>
-                      <button
-                        onClick={() => navigate({ page: 'product', slug: product.slug })}
+                      <Link
+                        href={`/urun/${product.slug}`}
                         className="text-sm font-medium text-[#1A2744] hover:text-[#F27A1A] line-clamp-2"
                       >
                         {product.name}
-                      </button>
+                      </Link>
                     </div>
                   </th>
                 ))}

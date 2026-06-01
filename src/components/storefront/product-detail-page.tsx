@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ShoppingCart, Heart, BarChart3, Star, Truck, Shield, RotateCcw, ChevronRight, Minus, Plus, Store } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
 import type { Product, ProductVariation, Review } from '@/types'
@@ -20,7 +21,7 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { addItem } = useCartStore()
   const { toggleFavorite, isFavorite } = useFavoritesStore()
   const { toggleComparison, isComparing } = useComparisonStore()
@@ -82,7 +83,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-[#1A2744]">Ürün bulunamadı</h2>
-        <Button onClick={() => navigate({ page: 'home' })} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Ana Sayfaya Dön
         </Button>
       </div>
@@ -148,14 +149,14 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4 overflow-x-auto">
-        <button onClick={() => navigate({ page: 'home' })} className="hover:text-[#F27A1A]">Ana Sayfa</button>
+        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
         {product.category && (
           <>
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-            <button onClick={() => navigate({ page: 'category', slug: product.category.slug })} className="hover:text-[#F27A1A]">
+            <Link href={`/kategori/${product.category.slug}`} className="hover:text-[#F27A1A]">
               {product.category.parent?.name && `${product.category.parent.name} > `}
               {product.category.name}
-            </button>
+            </Link>
           </>
         )}
         <ChevronRight className="h-3.5 w-3.5 shrink-0" />
@@ -205,12 +206,12 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
         <div className="space-y-4">
           {/* Brand */}
           {product.brand && (
-            <button
-              onClick={() => navigate({ page: 'brand', slug: product.brand.slug })}
+            <Link
+              href={`/marka/${product.brand.slug}`}
               className="text-sm text-[#F27A1A] font-semibold hover:underline"
             >
               {product.brand.name}
-            </button>
+            </Link>
           )}
 
           {/* Name */}
@@ -219,13 +220,13 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           {/* Store info */}
           {product.store && (
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => navigate({ page: 'store', slug: product.store.slug })}
+              <Link
+                href={`/magaza/${product.store.slug}`}
                 className="text-sm text-blue-600 hover:underline flex items-center gap-1"
               >
                 <Store className="h-4 w-4" />
                 {product.store.name}
-              </button>
+              </Link>
               <span className="text-sm text-gray-400">· {product.store.rating} ★</span>
             </div>
           )}

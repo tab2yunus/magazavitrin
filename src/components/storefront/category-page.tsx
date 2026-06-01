@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ChevronRight, SlidersHorizontal, X } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import ProductCard from './product-card'
 import type { Product, Category, Brand } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,7 @@ interface CategoryPageProps {
 }
 
 export default function CategoryPage({ slug }: CategoryPageProps) {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const [category, setCategory] = useState<Category | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [totalProducts, setTotalProducts] = useState(0)
@@ -86,14 +87,14 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
           <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Alt Kategoriler</h3>
           <div className="space-y-2">
             {category.children.map((child) => (
-              <button
+              <Link
                 key={child.id}
-                onClick={() => navigate({ page: 'category', slug: child.slug })}
+                href={`/kategori/${child.slug}`}
                 className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1 flex items-center gap-2"
               >
                 <span>{child.icon}</span>
                 <span>{child.name}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
@@ -158,13 +159,13 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <button onClick={() => navigate({ page: 'home' })} className="hover:text-[#F27A1A]">Ana Sayfa</button>
+        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
         {category?.parent && (
           <>
             <ChevronRight className="h-3.5 w-3.5" />
-            <button onClick={() => navigate({ page: 'category', slug: category.parent!.slug })} className="hover:text-[#F27A1A]">
+            <Link href={`/kategori/${category.parent!.slug}`} className="hover:text-[#F27A1A]">
               {category.parent.name}
-            </button>
+            </Link>
           </>
         )}
         <ChevronRight className="h-3.5 w-3.5" />
@@ -231,7 +232,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">Bu kategoride ürün bulunamadı.</p>
-              <Button onClick={() => navigate({ page: 'home' })} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+              <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
                 Ana Sayfaya Dön
               </Button>
             </div>

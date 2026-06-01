@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
 import { Mail, Lock, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 
 export default function LoginPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { login } = useAuthStore()
   const { toast } = useToast()
   const [email, setEmail] = useState('')
@@ -30,7 +31,7 @@ export default function LoginPage() {
       const success = await login(email, password)
       if (success) {
         toast({ title: 'Hoş geldiniz!', description: 'Başarıyla giriş yaptınız' })
-        navigate({ page: 'account' })
+        router.push('/hesabim')
       } else {
         toast({ title: 'Giriş başarısız', description: 'E-posta veya şifre hatalı', variant: 'destructive' })
       }
@@ -46,10 +47,10 @@ export default function LoginPage() {
       <Card>
         <CardHeader className="text-center">
           <div className="mx-auto mb-2">
-            <span className="text-3xl font-extrabold">
+            <Link href="/" className="text-3xl font-extrabold">
               <span className="text-[#F27A1A]">Mağaza</span>
               <span className="text-[#1A2744]">Vitrin</span>
-            </span>
+            </Link>
           </div>
           <CardTitle className="text-xl">Giriş Yap</CardTitle>
         </CardHeader>
@@ -103,12 +104,12 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               Hesabınız yok mu?{' '}
-              <button
-                onClick={() => navigate({ page: 'register' })}
+              <Link
+                href="/kayit"
                 className="text-[#F27A1A] font-semibold hover:underline"
               >
                 Kayıt olun
-              </button>
+              </Link>
             </p>
           </div>
 

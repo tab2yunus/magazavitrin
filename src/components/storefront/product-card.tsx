@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Heart, ShoppingCart, Star } from 'lucide-react'
-import { useRouterStore } from '@/stores/router-store'
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore } from '@/stores/favorites-store'
 import type { Product } from '@/types'
@@ -16,7 +16,6 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { navigate } = useRouterStore()
   const { addItem } = useCartStore()
   const { toggleFavorite, isFavorite } = useFavoritesStore()
   const { toast } = useToast()
@@ -32,6 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   async function handleAddToCart(e: React.MouseEvent) {
     e.stopPropagation()
+    e.preventDefault()
     try {
       await addItem(product.id, 1)
       toast({ title: 'Sepete eklendi', description: product.name })
@@ -42,15 +42,16 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   async function handleToggleFavorite(e: React.MouseEvent) {
     e.stopPropagation()
+    e.preventDefault()
     await toggleFavorite(product.id)
   }
 
   return (
-    <div
-      className="product-card group bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer relative"
+    <Link
+      href={`/urun/${product.slug}`}
+      className="product-card group bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer relative block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate({ page: 'product', slug: product.slug })}
     >
       {/* Image area */}
       <div className="relative aspect-square bg-[#F5F5F5] overflow-hidden">
@@ -143,17 +144,15 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Store */}
         {product.store && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              navigate({ page: 'store', slug: product.store!.slug })
-            }}
+          <Link
+            href={`/magaza/${product.store.slug}`}
+            onClick={(e) => e.stopPropagation()}
             className="text-xs text-gray-500 hover:text-[#F27A1A] mt-1 truncate block transition-colors"
           >
             {product.store.name}
-          </button>
+          </Link>
         )}
       </div>
-    </div>
+    </Link>
   )
 }

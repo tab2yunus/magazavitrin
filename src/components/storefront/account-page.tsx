@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouterStore } from '@/stores/router-store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
 import { User, Package, Heart, BarChart3, Settings, LogOut, Shield } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function AccountPage() {
-  const { navigate } = useRouterStore()
+  const router = useRouter()
   const { user, fetchUser, logout, isLoading } = useAuthStore()
 
   useEffect(() => {
@@ -20,13 +21,13 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      navigate({ page: 'login' })
+      router.push('/giris')
     }
-  }, [isLoading, user, navigate])
+  }, [isLoading, user, router])
 
   async function handleLogout() {
     await logout()
-    navigate({ page: 'home' })
+    router.push('/')
   }
 
   if (isLoading || !user) {
@@ -43,9 +44,9 @@ export default function AccountPage() {
   }
 
   const quickLinks = [
-    { icon: Package, label: 'Siparişlerim', page: 'orders' as const, color: 'text-blue-600 bg-blue-50' },
-    { icon: Heart, label: 'Favorilerim', page: 'favorites' as const, color: 'text-red-600 bg-red-50' },
-    { icon: BarChart3, label: 'Karşılaştırmalarım', page: 'comparisons' as const, color: 'text-purple-600 bg-purple-50' },
+    { icon: Package, label: 'Siparişlerim', href: '/siparislerim', color: 'text-blue-600 bg-blue-50' },
+    { icon: Heart, label: 'Favorilerim', href: '/favorilerim', color: 'text-red-600 bg-red-50' },
+    { icon: BarChart3, label: 'Karşılaştırmalarım', href: '/karsilastirma', color: 'text-purple-600 bg-purple-50' },
   ]
 
   return (
@@ -78,37 +79,34 @@ export default function AccountPage() {
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         {quickLinks.map((link) => (
-          <Card
-            key={link.page}
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => navigate({ page: link.page })}
-          >
-            <CardContent className="p-5 text-center">
-              <div className={`w-12 h-12 rounded-full ${link.color} flex items-center justify-center mx-auto mb-3`}>
-                <link.icon className="h-6 w-6" />
-              </div>
-              <p className="font-medium text-sm text-[#1A2744]">{link.label}</p>
-            </CardContent>
-          </Card>
+          <Link key={link.href} href={link.href}>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow h-full">
+              <CardContent className="p-5 text-center">
+                <div className={`w-12 h-12 rounded-full ${link.color} flex items-center justify-center mx-auto mb-3`}>
+                  <link.icon className="h-6 w-6" />
+                </div>
+                <p className="font-medium text-sm text-[#1A2744]">{link.label}</p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
       {/* Admin link */}
       {(user.role === 'super_admin' || user.role === 'editor') && (
-        <Card
-          className="cursor-pointer hover:shadow-md transition-shadow mb-6 border-[#F27A1A]/30"
-          onClick={() => navigate({ page: 'admin' })}
-        >
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#FFF3E8] text-[#F27A1A] flex items-center justify-center">
-              <Shield className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="font-semibold text-[#1A2744]">Yönetim Paneli</p>
-              <p className="text-xs text-gray-500">Ürün, sipariş ve site yönetimi</p>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/admin">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow mb-6 border-[#F27A1A]/30">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-[#FFF3E8] text-[#F27A1A] flex items-center justify-center">
+                <Shield className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-semibold text-[#1A2744]">Yönetim Paneli</p>
+                <p className="text-xs text-gray-500">Ürün, sipariş ve site yönetimi</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       )}
 
       {/* Account details */}
