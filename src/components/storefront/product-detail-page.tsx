@@ -7,7 +7,7 @@ import { ShoppingCart, Heart, BarChart3, Star, Truck, Shield, RotateCcw, Chevron
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
 import type { Product, ProductVariation, Review } from '@/types'
-import { formatPrice, getDiscountPercent } from '@/lib/storefront-utils'
+import { formatPrice, getDiscountPercent, proxyImageUrl } from '@/lib/storefront-utils'
 import ProductCard from './product-card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -170,7 +170,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           <div className="aspect-square rounded-xl overflow-hidden bg-[#F5F5F5] relative">
             {images[selectedImage] ? (
               <img
-                src={images[selectedImage].url}
+                src={proxyImageUrl(images[selectedImage].url)}
                 alt={images[selectedImage].alt || product.name}
                 className="w-full h-full object-cover"
               />
@@ -195,7 +195,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
                     i === selectedImage ? 'border-[#F27A1A]' : 'border-gray-200'
                   }`}
                 >
-                  <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
+                  <img src={proxyImageUrl(img.url)} alt={img.alt || ''} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

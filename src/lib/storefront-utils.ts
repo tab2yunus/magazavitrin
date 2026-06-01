@@ -55,3 +55,14 @@ export function getPaymentMethodText(method: string): string {
     default: return method
   }
 }
+
+// Proxy external images through our API to avoid hotlink blocks
+export function proxyImageUrl(url: string): string {
+  if (!url) return ''
+  // Only proxy external URLs (not placehold.co which works fine)
+  if (url.includes('placehold.co') || url.includes('via.placeholder.com') || url.startsWith('/')) {
+    return url
+  }
+  // Use our image proxy for external URLs
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`
+}

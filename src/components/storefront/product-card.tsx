@@ -6,7 +6,7 @@ import { Heart, ShoppingCart, Star } from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore } from '@/stores/favorites-store'
 import type { Product } from '@/types'
-import { formatPrice, getDiscountPercent } from '@/lib/storefront-utils'
+import { formatPrice, getDiscountPercent, proxyImageUrl } from '@/lib/storefront-utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
@@ -25,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = product.discountPrice && product.discountPrice < product.normalPrice
   const discountPercent = hasDiscount ? getDiscountPercent(product.normalPrice, product.discountPrice!) : 0
   const currentPrice = product.discountPrice || product.normalPrice
-  const imageUrl = product.images?.[0]?.url || `https://placehold.co/300x300/F5F5F5/999?text=${encodeURIComponent(product.name.slice(0, 12))}`
+  const imageUrl = proxyImageUrl(product.images?.[0]?.url || `https://placehold.co/300x300/F5F5F5/999?text=${encodeURIComponent(product.name.slice(0, 12))}`)
   const rating = (product as any).avgRating || 0
   const reviewCount = (product as any).reviewCount || 0
 
@@ -49,6 +49,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/urun/${product.slug}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className="product-card group bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer relative block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

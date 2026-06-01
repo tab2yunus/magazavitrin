@@ -28,6 +28,8 @@ interface ScraperResult {
   totalSaved: number
   totalDuplicates: number
   totalErrors: number
+  zeroPriceSkipped: number
+  autoPublished: number
   categories: number
   errors: string[]
 }
@@ -88,7 +90,7 @@ function toUpperCaseTurkish(str: string): string {
     .toUpperCase()
 }
 
-function slugifyNoTR(str: string): string {
+function slugify(str: string): string {
   // Convert TR chars to ASCII, lowercase, replace non-alnum with dash
   return str
     .replace(/İ/g, 'I')
@@ -106,6 +108,20 @@ function slugifyNoTR(str: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+// Alias for backwards compatibility
+const slugifyNoTR = slugify
+
+// Helper: generate unique slug for Product
+async function generateUniqueSlug(baseSlug: string): Promise<string> {
+  let slug = baseSlug
+  let counter = 1
+  while (await db.product.findUnique({ where: { slug } })) {
+    slug = `${baseSlug}-${counter}`
+    counter++
+  }
+  return slug
 }
 
 function extractModelFromCategory(category: string): string | null {
@@ -295,9 +311,20 @@ export async function fetchProductsByCategory(category: string): Promise<Scraped
         const sku = partCode || null
 
         if (partCode) {
+          // Build a more descriptive product name for SEO
+          let productName = partCode
+          if (description) {
+            // Combine part code with description for SEO
+            productName = `${partCode} ${description}`
+          } else if (model) {
+            // If no description but we have model info, prepend it
+            productName = `${model} ${partCode}`
+          }
+          productName = toUpperCaseTurkish(productName)
+
           products.push({
             sourceProductId,
-            productName: toUpperCaseTurkish(partCode),
+            productName,
             description: description ? toUpperCaseTurkish(description) : null,
             category: toUpperCaseTurkish(category),
             brand,
@@ -324,13 +351,25 @@ export async function fetchProductsByCategory(category: string): Promise<Scraped
 }
 
 // ─── SAVE PRODUCTS ─────────────────────────────────────────
-async function saveProducts(products: ScrapedProduct[]): Promise<{ saved: number; duplicates: number; errors: number }> {
+async function saveProducts(products: ScrapedProduct[]): Promise<{ saved: number; duplicates: number; errors: number; zeroPriceSkipped: number; autoPublished: number }> {
   let saved = 0
   let duplicates = 0
   let errors = 0
+  let zeroPriceSkipped = 0
+  let autoPublished = 0
+
+  // Default markup for auto-publish (30%)
+  const markupMultiplier = 1.3
 
   for (const product of products) {
     try {
+      // Skip products with zero or negative price
+      if (product.supplierPrice <= 0) {
+        console.log(`[MOTOLUX] Skipping zero-price product: ${product.sourceProductId}`)
+        zeroPriceSkipped++
+        continue
+      }
+
       // Check for duplicates by sourceProductId
       const existing = await db.importedProduct.findUnique({
         where: { sourceProductId: product.sourceProductId },
@@ -355,9 +394,29 @@ async function saveProducts(products: ScrapedProduct[]): Promise<{ saved: number
           },
         })
         duplicates++
+
+        // Auto-update the published product's stock, price, and active status
+        if (existing.isPublished && existing.publishedProductId) {
+          try {
+            const normalPrice = Math.round(product.supplierPrice * markupMultiplier * 100) / 100
+
+            await db.product.update({
+              where: { id: existing.publishedProductId },
+              data: {
+                stock: product.stock,
+                normalPrice,
+                isActive: product.stock > 0, // Auto-activate if in stock, deactivate if not
+              },
+            })
+
+            console.log(`[MOTOLUX] Auto-updated published product ${existing.publishedProductId}: stock=${product.stock}, price=${normalPrice}, isActive=${product.stock > 0}`)
+          } catch (updateErr) {
+            console.error(`[MOTOLUX] Auto-update error for published product ${existing.publishedProductId}:`, updateErr)
+          }
+        }
       } else {
         // Create new product
-        await db.importedProduct.create({
+        const savedProduct = await db.importedProduct.create({
           data: {
             sourceSupplier: 'MOTOLUX',
             sourceProductId: product.sourceProductId,
@@ -375,6 +434,120 @@ async function saveProducts(products: ScrapedProduct[]): Promise<{ saved: number
           },
         })
         saved++
+
+        // Auto-publish products with stock > 0
+        if (product.stock > 0) {
+          try {
+            // Find or create Category
+            let categoryId: string | null = null
+            if (product.category) {
+              const categorySlug = slugify(product.category)
+              const existingCat = await db.category.findFirst({ where: { slug: categorySlug } })
+              if (existingCat) {
+                categoryId = existingCat.id
+              } else {
+                const newCat = await db.category.create({
+                  data: { name: product.category, slug: categorySlug, isActive: true },
+                })
+                categoryId = newCat.id
+              }
+            }
+
+            // Find or create Brand
+            let brandId: string | null = null
+            if (product.brand) {
+              const brandSlug = slugify(product.brand)
+              const existingBrand = await db.brand.findFirst({ where: { slug: brandSlug } })
+              if (existingBrand) {
+                brandId = existingBrand.id
+              } else {
+                const newBrand = await db.brand.create({
+                  data: { name: product.brand, slug: brandSlug, isActive: true },
+                })
+                brandId = newBrand.id
+              }
+            }
+
+            // Ensure MOTOLUX store exists
+            let storeId: string | null = null
+            const existingStore = await db.store.findFirst({ where: { slug: 'motolux' } })
+            if (existingStore) {
+              storeId = existingStore.id
+            } else {
+              const newStore = await db.store.create({
+                data: {
+                  name: 'MOTOLUX',
+                  slug: 'motolux',
+                  description: 'MOTOLUX motosiklet ve yedek parça',
+                  city: 'İstanbul',
+                  category: 'Otomotiv',
+                  isActive: true,
+                },
+              })
+              storeId = newStore.id
+            }
+
+            // Calculate retail price with markup
+            const normalPrice = Math.round(product.supplierPrice * markupMultiplier * 100) / 100
+
+            // Generate unique slug
+            const baseSlug = slugify(product.productName)
+            const productSlug = await generateUniqueSlug(baseSlug || `urun-${product.sourceProductId}`)
+
+            // Create Product
+            const newProduct = await db.product.create({
+              data: {
+                name: product.productName,
+                slug: productSlug,
+                sku: product.sku || product.sourceProductId,
+                barcode: product.barcode,
+                description: product.description || product.productName,
+                shortDescription: product.description
+                  ? (product.description.length > 120 ? product.description.substring(0, 120) + '...' : product.description)
+                  : null,
+                normalPrice,
+                stock: product.stock,
+                shippingTime: '1-3 İş Günü',
+                isActive: true, // Auto-activate since stock > 0
+                isFeatured: false,
+                isBestSeller: false,
+                isNew: true,
+                brandId,
+                categoryId,
+                storeId,
+              },
+            })
+
+            // Create ProductImages
+            if (product.imageUrls && product.imageUrls.length > 0) {
+              for (let i = 0; i < product.imageUrls.length; i++) {
+                await db.productImage.create({
+                  data: {
+                    url: product.imageUrls[i],
+                    alt: product.productName,
+                    sortOrder: i,
+                    productId: newProduct.id,
+                  },
+                })
+              }
+            }
+
+            // Mark imported product as published
+            await db.importedProduct.update({
+              where: { id: savedProduct.id },
+              data: {
+                isPublished: true,
+                publishedProductId: newProduct.id,
+                publishedAt: new Date(),
+              },
+            })
+
+            autoPublished++
+            console.log(`[MOTOLUX] Auto-published ${product.sourceProductId} → Product ${newProduct.id}`)
+          } catch (publishErr) {
+            console.error(`[MOTOLUX] Auto-publish error for ${product.sourceProductId}:`, publishErr)
+          }
+        }
       }
     } catch (err) {
       console.error(`[MOTOLUX] Save error for ${product.sourceProductId}:`, err)
@@ -382,7 +555,7 @@ async function saveProducts(products: ScrapedProduct[]): Promise<{ saved: number
     }
   }
 
-  return { saved, duplicates, errors }
+  return { saved, duplicates, errors, zeroPriceSkipped, autoPublished }
 }
 
 // ─── MAIN SCRAPER RUNNER ───────────────────────────────────
@@ -393,6 +566,8 @@ export async function runScraper(config: ScraperConfig = {}): Promise<ScraperRes
     totalSaved: 0,
     totalDuplicates: 0,
     totalErrors: 0,
+    zeroPriceSkipped: 0,
+    autoPublished: 0,
     categories: 0,
     errors: [],
   }
@@ -446,6 +621,8 @@ export async function runScraper(config: ScraperConfig = {}): Promise<ScraperRes
           result.totalSaved += saveResult.saved
           result.totalDuplicates += saveResult.duplicates
           result.totalErrors += saveResult.errors
+          result.zeroPriceSkipped += saveResult.zeroPriceSkipped
+          result.autoPublished += saveResult.autoPublished
 
           // Update log progress
           await db.scraperLog.update({
@@ -487,7 +664,7 @@ export async function runScraper(config: ScraperConfig = {}): Promise<ScraperRes
       },
     })
 
-    console.log(`[MOTOLUX] Scraping completed: ${result.totalScraped} scraped, ${result.totalSaved} saved, ${result.totalDuplicates} duplicates, ${result.totalErrors} errors`)
+    console.log(`[MOTOLUX] Scraping completed: ${result.totalScraped} scraped, ${result.totalSaved} saved, ${result.totalDuplicates} duplicates, ${result.totalErrors} errors, ${result.zeroPriceSkipped} zero-price skipped, ${result.autoPublished} auto-published`)
   } catch (error) {
     const errMsg = `Fatal error: ${error}`
     result.errors.push(errMsg)

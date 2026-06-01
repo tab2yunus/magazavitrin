@@ -214,3 +214,106 @@ Stage Summary:
 - JSON-LD structured data for product pages
 - All navigation uses Next.js Link (SEO-friendly, supports middle-click/Ctrl+click)
 - ESLint: 0 errors
+
+---
+
+## Task 2 - Image Proxy API Endpoint
+**Agent**: main
+**Date**: 2025-03-04
+**Status**: ✅ Completed
+
+### What was done
+- Created `/home/z/my-project/src/app/api/image-proxy/route.ts`
+- Implements a server-side image proxy API endpoint that:
+  - Accepts a `url` query parameter
+  - Validates URL format
+  - Restricts proxying to whitelisted domains (simmoto.com, placehold.co, etc.)
+  - Blocks private IP addresses (localhost, 127.0.0.1, 192.168.*, 10.*, 172.*)
+  - Fetches images server-side with appropriate headers (User-Agent, Accept, Referer) to bypass hotlink protection
+  - Validates response is an image content type
+  - Returns image with proper Content-Type, Cache-Control (1 day), and CORS headers
+  - Handles errors gracefully (400/403/404/500 responses)
+
+### Verification
+- `bun run lint` passes with zero errors
+- File content matches the specification exactly
+
+---
+Task ID: 4
+Agent: Code Agent
+Task: Fix product card links and SEO URL structures
+
+Work Log:
+- Modified product-card.tsx to open product links in new tabs (target="_blank" rel="noopener noreferrer") when clicked from listing pages
+- Updated product-card.tsx to use proxyImageUrl() for product image URLs to route external images through the image proxy
+- Improved SEO product names in motolux-scraper.ts: productName now combines partCode with description or model info for better SEO (e.g., "AFRİKA-K50093 Yağ Filtresi" instead of just "AFRİKA-K50093")
+- Updated next.config.ts with images configuration including remotePatterns for simmoto.com, placehold.co, via.placeholder.com, motoluxofficial.com and unoptimized: true
+- Added proxyImageUrl() utility function to storefront-utils.ts that proxies external image URLs through /api/image-proxy while keeping placehold.co and local paths as-is
+- Updated product-detail-page.tsx to use proxyImageUrl() for main product image and thumbnail gallery images
+- ESLint: 0 errors
+- Dev server restarted and compiling successfully
+
+Stage Summary:
+- Product cards now open in new tabs from listing pages (home, category, search, brand)
+- Product names from MOTOLUX scraper now include description/model info for SEO
+- All external images routed through image proxy to avoid hotlink blocks
+- Next.js configured with proper image domain allowlist
+
+## Task 3: Fix Search Functionality - Turkish Character Support & Live Search
+
+**Date:** 2025-01-XX
+**Agent:** main
+
+### Changes Made
+
+#### 1. Rewrote `/src/app/api/search/route.ts`
+- **Turkish character handling**: Added `toSearchable()` function that normalizes Turkish characters (İ→I, ı→i, Ş→S, ş→s, Ç→C, ç→c, Ü→U, ü→u, Ö→O, ö→o, Ğ→G, ğ→g) to ASCII equivalents for matching
+- **Turkish uppercase**: Added `toUpperCaseTurkish()` function that properly converts lowercase i→İ, ı→I before uppercasing
+- **Multiple search variants**: Searches now use 5 variants (original, .toUpperCase(), .toLowerCase(), ASCII-normalized lowercase, Turkish uppercase) to cover all case combinations for Turkish characters
+- **Extended search fields**: Added `sku`, `barcode` fields to product search in addition to `name` and `description`
+- **Category & brand cross-search**: Search now also finds products by matching category names and brand names (resolves category/brand IDs first, then adds them as OR conditions)
+- **Increased result limit**: Products: 20→50, Stores: 5→10, Categories: 5→10, Brands: 5→10
+- **Category included in results**: Added `category: { select: { id, name, slug } }` to product includes
+- **Rating calculation**: Added avgRating/reviewCount calculation for search results
+
+#### 2. Updated `/src/components/storefront/storefront-header.tsx`
+- **Placeholder change**: "Ürün, kategori veya marka ara..." → "Parça, model veya marka ara..." (more appropriate for motorcycle parts marketplace)
+- **Live search suggestions dropdown**: Added complete dropdown UI that:
+  - Shows when searchQuery has ≥ 2 characters
+  - Fetches from `/api/search` with 300ms debounce
+  - Displays product suggestions (thumbnail + name + brand/category + price)
+  - Displays category suggestions (with Tag icon)
+  - Displays brand suggestions (with Building2 icon)
+  - Shows "Tüm sonuçları gör" (See all results) link at bottom
+  - Shows loading spinner while fetching
+  - Shows "no results" state when nothing found
+  - Closes on outside click or Escape key
+  - Re-opens on input focus if results exist
+- **Mobile search placeholder**: Also updated to "Parça, model veya marka ara..."
+- **New imports**: Added `Loader2`, `Tag`, `Building2`, `Package` icons; `formatPrice` utility; `Product` type
+
+### Testing
+- Linter passes with no errors
+- Dev server running without issues
+- Search API will now find "AFRİKA" when searching "afrika" or any case variant
+
+---
+Task ID: 6-7
+Agent: Code Agent
+Task: Fix MOTOLUX scraper - add price=0 skip, stock=0 allow, auto-activate products with stock>0
+
+Work Log:
+- Updated ScraperResult interface with `zeroPriceSkipped` and `autoPublished` counters
+- Renamed `slugifyNoTR` to `slugify` (kept alias for backward compat), added `generateUniqueSlug` helper
+- Added price=0 skip: products with `supplierPrice <= 0` are skipped and counted
+- Added auto-activate: when existing published ImportedProduct is updated, the corresponding Product gets stock/price/isActive updated automatically
+- Added auto-publish: new products with stock>0 are automatically published to Product table with Category, Brand, Store, and ProductImage creation
+- Updated scraper-tab.tsx UI to display 7 result columns including "Fiyatsız Atla" and "Oto-Yayınla"
+- ESLint: 0 errors
+- Dev server running and compiling successfully
+
+Stage Summary:
+- MOTOLUX scraper now skips zero-price products automatically
+- Products with stock>0 are auto-published and auto-activated during scraping
+- Existing published products get their stock/price/active status synced on re-scrape
+- Admin UI shows new counters for skipped and auto-published products

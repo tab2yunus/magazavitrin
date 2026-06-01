@@ -1,18 +1,25 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown, Shield } from 'lucide-react'
+import { Search, Heart, User, ShoppingCart, Menu, X, ChevronDown, Shield, Loader2, Tag, Building2, Package } from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
-import type { Category } from '@/types'
+import type { Category, Brand, Product } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { formatPrice } from '@/lib/storefront-utils'
+
+interface SearchSuggestion {
+  products: (Product & { avgRating?: number; reviewCount?: number })[]
+  categories: Category[]
+  brands: Brand[]
+}
 
 export default function StorefrontHeader() {
   const router = useRouter()
@@ -26,6 +33,13 @@ export default function StorefrontHeader() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [categoryDropdown, setCategoryDropdown] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Live search suggestions state
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [suggestions, setSuggestions] = useState<SearchSuggestion | null>(null)
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  const suggestionsRef = useRef<HTMLDivElement>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     async function loadInitialData() {
@@ -49,10 +63,88 @@ export default function StorefrontHeader() {
     }
   }, [user, fetchFavorites, fetchComparisons])
 
+  // Live search with debounce
+  const fetchSuggestions = useCallback(async (query: string) => {
+    if (!query || query.trim().length < 2) {
+      setSuggestions(null)
+      setShowSuggestions(false)
+      return
+    }
+
+    setSuggestionsLoading(true)
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`)
+      if (res.ok) {
+        const data = await res.json()
+        setSuggestions({
+          products: data.products?.slice(0, 5) || [],
+          categories: data.categories?.slice(0, 4) || [],
+          brands: data.brands?.slice(0, 4) || [],
+        })
+        setShowSuggestions(true)
+      }
+    } catch { /* ignore */ }
+    finally {
+      setSuggestionsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    // Clear previous debounce timer
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    if (searchQuery.trim().length >= 2) {
+      debounceRef.current = setTimeout(() => {
+        fetchSuggestions(searchQuery)
+      }, 300)
+    } else {
+      setSuggestions(null)
+      setShowSuggestions(false)
+    }
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+  }, [searchQuery, fetchSuggestions])
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Close suggestions on Escape
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setShowSuggestions(false)
+        searchInputRef.current?.blur()
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [])
+
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
+  const hasSuggestionResults = suggestions && (
+    suggestions.products.length > 0 ||
+    suggestions.categories.length > 0 ||
+    suggestions.brands.length > 0
+  )
 
   function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' && searchQuery.trim()) {
+      setShowSuggestions(false)
       router.push(`/ara?q=${encodeURIComponent(searchQuery.trim())}`)
       setMobileSearchOpen(false)
     }
@@ -60,9 +152,16 @@ export default function StorefrontHeader() {
 
   function handleSearchClick() {
     if (searchQuery.trim()) {
+      setShowSuggestions(false)
       router.push(`/ara?q=${encodeURIComponent(searchQuery.trim())}`)
       setMobileSearchOpen(false)
     }
+  }
+
+  function handleSuggestionClick(href: string) {
+    setShowSuggestions(false)
+    setSearchQuery('')
+    router.push(href)
   }
 
   return (
@@ -145,14 +244,19 @@ export default function StorefrontHeader() {
           </Link>
 
           {/* Desktop search */}
-          <div className="hidden md:flex flex-1 max-w-2xl mx-4">
+          <div className="hidden md:flex flex-1 max-w-2xl mx-4 relative" ref={suggestionsRef}>
             <div className="relative w-full flex">
               <Input
                 ref={searchInputRef}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
-                placeholder="Ürün, kategori veya marka ara..."
+                onFocus={() => {
+                  if (searchQuery.trim().length >= 2 && hasSuggestionResults) {
+                    setShowSuggestions(true)
+                  }
+                }}
+                placeholder="Parça, model veya marka ara..."
                 className="w-full h-11 pl-4 pr-12 rounded-l-lg border-r-0 focus-visible:ring-[#F27A1A] border-gray-300"
               />
               <Button
@@ -162,6 +266,132 @@ export default function StorefrontHeader() {
                 <Search className="h-5 w-5" />
               </Button>
             </div>
+
+            {/* Search Suggestions Dropdown */}
+            {showSuggestions && searchQuery.trim().length >= 2 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-[60] max-h-[420px] overflow-y-auto custom-scrollbar">
+                {suggestionsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-[#F27A1A]" />
+                    <span className="ml-2 text-sm text-gray-500">Aranıyor...</span>
+                  </div>
+                ) : hasSuggestionResults ? (
+                  <div className="py-2">
+                    {/* Products */}
+                    {suggestions!.products.length > 0 && (
+                      <div>
+                        <div className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                          Ürünler
+                        </div>
+                        {suggestions!.products.map((product) => {
+                          const imageUrl = product.images?.[0]?.url || `https://placehold.co/48x48/F5F5F5/999?text=${encodeURIComponent(product.name.slice(0, 2))}`
+                          const currentPrice = product.discountPrice || product.normalPrice
+                          const hasDiscount = product.discountPrice && product.discountPrice < product.normalPrice
+                          return (
+                            <button
+                              key={product.id}
+                              onClick={() => handleSuggestionClick(`/urun/${product.slug}`)}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#FFF3E8] transition-colors text-left"
+                            >
+                              <div className="w-10 h-10 rounded-md bg-gray-100 overflow-hidden shrink-0">
+                                <img
+                                  src={imageUrl}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `https://placehold.co/48x48/F5F5F5/999?text=${encodeURIComponent(product.name.slice(0, 2))}`
+                                  }}
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
+                                <div className="flex items-center gap-2">
+                                  {product.brand && (
+                                    <span className="text-xs text-gray-500">{product.brand.name}</span>
+                                  )}
+                                  {product.category && (
+                                    <span className="text-xs text-gray-400">• {product.category.name}</span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <span className={`text-sm font-bold ${hasDiscount ? 'text-[#F27A1A]' : 'text-[#1A2744]'}`}>
+                                  {formatPrice(currentPrice)}
+                                </span>
+                                {hasDiscount && (
+                                  <span className="block text-xs text-gray-400 line-through">
+                                    {formatPrice(product.normalPrice)}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+
+                    {/* Categories */}
+                    {suggestions!.categories.length > 0 && (
+                      <div>
+                        <div className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">
+                          Kategoriler
+                        </div>
+                        {suggestions!.categories.map((cat) => (
+                          <button
+                            key={cat.id}
+                            onClick={() => handleSuggestionClick(`/kategori/${cat.slug}`)}
+                            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FFF3E8] transition-colors text-left"
+                          >
+                            <Tag className="h-4 w-4 text-[#F27A1A] shrink-0" />
+                            <span className="text-sm text-gray-700">{cat.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Brands */}
+                    {suggestions!.brands.length > 0 && (
+                      <div>
+                        <div className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">
+                          Markalar
+                        </div>
+                        {suggestions!.brands.map((brand) => (
+                          <button
+                            key={brand.id}
+                            onClick={() => handleSuggestionClick(`/marka/${brand.slug}`)}
+                            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FFF3E8] transition-colors text-left"
+                          >
+                            <Building2 className="h-4 w-4 text-[#1A2744] shrink-0" />
+                            <span className="text-sm text-gray-700">{brand.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* See all results */}
+                    <div className="border-t mt-1">
+                      <button
+                        onClick={() => {
+                          setShowSuggestions(false)
+                          router.push(`/ara?q=${encodeURIComponent(searchQuery.trim())}`)
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#F27A1A] hover:bg-[#FFF3E8] transition-colors"
+                      >
+                        <Search className="h-4 w-4" />
+                        Tüm sonuçları gör
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <Package className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">
+                      &ldquo;{searchQuery}&rdquo; için sonuç bulunamadı
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile search toggle */}
@@ -235,7 +465,7 @@ export default function StorefrontHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
-              placeholder="Ürün ara..."
+              placeholder="Parça, model veya marka ara..."
               className="flex-1 h-10 rounded-l-lg rounded-r-none border-r-0 focus-visible:ring-[#F27A1A]"
               autoFocus
             />

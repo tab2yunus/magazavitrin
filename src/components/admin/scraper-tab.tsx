@@ -403,7 +403,7 @@ export default function ScraperTab() {
                 <span className="font-medium">Hata: {scrapeResult.error}</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-7 gap-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-[#1A2744]">{scrapeResult.totalScraped}</p>
                   <p className="text-xs text-gray-600">Çekilen</p>
@@ -419,6 +419,14 @@ export default function ScraperTab() {
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-600">{scrapeResult.totalErrors}</p>
                   <p className="text-xs text-gray-600">Hata</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-500">{scrapeResult.zeroPriceSkipped ?? 0}</p>
+                  <p className="text-xs text-gray-600">Fiyatsız Atla</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-emerald-600">{scrapeResult.autoPublished ?? 0}</p>
+                  <p className="text-xs text-gray-600">Oto-Yayınla</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-600">{scrapeResult.categories}</p>
