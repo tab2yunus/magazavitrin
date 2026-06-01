@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Package, MapPin, CreditCard, Truck, ChevronRight, ArrowLeft } from 'lucide-react'
+import { useBrand } from '@/lib/brand-context'
 import type { Order } from '@/types'
 import { formatPrice, getStatusColor, getStatusText, getPaymentMethodText } from '@/lib/storefront-utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +19,7 @@ interface OrderDetailPageProps {
 
 export default function OrderDetailPage({ id }: OrderDetailPageProps) {
   const router = useRouter()
+  const { theme } = useBrand()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -50,8 +52,8 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#0F1B2D]">Sipariş bulunamadı</h2>
-        <Button onClick={() => router.push('/siparislerim')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <h2 className="text-2xl font-bold text-[var(--color-text)]">Sipariş bulunamadı</h2>
+        <Button onClick={() => router.push('/siparislerim')} className="mt-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           Siparişlerime Dön
         </Button>
       </div>
@@ -66,7 +68,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-[#0F1B2D]">Sipariş #{order.orderNumber}</h1>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">Sipariş #{order.orderNumber}</h1>
           <p className="text-sm text-gray-500">
             {new Date(order.createdAt).toLocaleDateString('tr-TR', {
               day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -81,11 +83,11 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#FFF3E8] flex items-center justify-center">
-                  <Package className="h-5 w-5 text-[#F27A1A]" />
+                <div className="w-10 h-10 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+                  <Package className="h-5 w-5 text-[var(--color-primary)]" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#0F1B2D]">Sipariş Durumu</p>
+                  <p className="font-semibold text-[var(--color-text)]">Sipariş Durumu</p>
                   <Badge className={`${getStatusColor(order.status)} border-0 mt-1`}>
                     {getStatusText(order.status)}
                   </Badge>
@@ -95,7 +97,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Takip No</p>
                   <p className="text-sm font-medium flex items-center gap-1">
-                    <Truck className="h-4 w-4 text-[#10B981]" /> {order.trackingNumber}
+                    <Truck className="h-4 w-4 text-[var(--color-success)]" /> {order.trackingNumber}
                   </p>
                 </div>
               )}
@@ -121,7 +123,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#0F1B2D] truncate">{item.productName}</p>
+                  <p className="text-sm font-medium text-[var(--color-text)] truncate">{item.productName}</p>
                   <p className="text-xs text-gray-500">{item.quantity} adet</p>
                 </div>
                 <p className="text-sm font-semibold shrink-0">{formatPrice(item.totalPrice)}</p>
@@ -134,16 +136,16 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-5">
-              <h3 className="font-semibold text-sm text-[#0F1B2D] flex items-center gap-2 mb-3">
-                <MapPin className="h-4 w-4 text-[#F27A1A]" /> Teslimat Adresi
+              <h3 className="font-semibold text-sm text-[var(--color-text)] flex items-center gap-2 mb-3">
+                <MapPin className="h-4 w-4 text-[var(--color-primary)]" /> Teslimat Adresi
               </h3>
               <p className="text-sm text-gray-600">{order.shippingAddress || 'Belirtilmemiş'}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-5">
-              <h3 className="font-semibold text-sm text-[#0F1B2D] flex items-center gap-2 mb-3">
-                <CreditCard className="h-4 w-4 text-[#F27A1A]" /> Ödeme
+              <h3 className="font-semibold text-sm text-[var(--color-text)] flex items-center gap-2 mb-3">
+                <CreditCard className="h-4 w-4 text-[var(--color-primary)]" /> Ödeme
               </h3>
               <p className="text-sm text-gray-600">{getPaymentMethodText(order.paymentMethod)}</p>
               <Badge variant="outline" className="mt-2 text-xs">
@@ -174,7 +176,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Toplam</span>
-                <span className="text-[#F27A1A]">{formatPrice(order.totalAmount)}</span>
+                <span className="text-[var(--color-primary)]">{formatPrice(order.totalAmount)}</span>
               </div>
             </div>
           </CardContent>

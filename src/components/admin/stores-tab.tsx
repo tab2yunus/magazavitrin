@@ -117,7 +117,7 @@ export default function StoresTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Mağazalar</h3>
-        <Button onClick={openNew} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+        <Button onClick={openNew} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           <Plus className="w-4 h-4 mr-2" /> Yeni Mağaza
         </Button>
       </div>
@@ -143,7 +143,7 @@ export default function StoresTab() {
                 {stores.map(s => (
                   <TableRow key={s.id}>
                     <TableCell>
-                      <div className="w-10 h-10 rounded-lg bg-[#0F1B2D] flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center">
                         {s.logo ? <img src={s.logo} alt={s.name} className="w-8 h-8 rounded object-cover" /> : <Store className="w-4 h-4 text-white" />}
                       </div>
                     </TableCell>
@@ -229,7 +229,7 @@ export default function StoresTab() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>İptal</Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+            <Button onClick={handleSave} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
               {saving ? 'Kaydediliyor...' : 'Kaydet'}
             </Button>
           </DialogFooter>

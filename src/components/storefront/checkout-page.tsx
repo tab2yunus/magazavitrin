@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
+import { useBrand } from '@/lib/brand-context'
 import { formatPrice } from '@/lib/storefront-utils'
 import { CreditCard, Truck, Banknote, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { items, getSubtotal, getShippingCost, getTotal, couponDiscount, clearCart } = useCartStore()
   const { user } = useAuthStore()
+  const { theme } = useBrand()
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -84,9 +86,9 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">Sepetiniz Boş</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Sepetiniz Boş</h2>
         <p className="text-gray-500 mb-6">Önce sepetinize ürün eklemeniz gerekiyor.</p>
-        <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+        <Button onClick={() => router.push('/')} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           Alışverişe Başla
         </Button>
       </div>
@@ -95,7 +97,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">Sipariş Oluştur</h1>
+      <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Sipariş Oluştur</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -105,7 +107,7 @@ export default function CheckoutPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Truck className="h-5 w-5 text-[#F27A1A]" /> Teslimat Adresi
+                  <Truck className="h-5 w-5 text-[var(--color-primary)]" /> Teslimat Adresi
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -180,7 +182,7 @@ export default function CheckoutPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <CreditCard className="h-5 w-5 text-[#F27A1A]" /> Ödeme Yöntemi
+                  <CreditCard className="h-5 w-5 text-[var(--color-primary)]" /> Ödeme Yöntemi
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -192,7 +194,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="cod" id="cod" />
                     <Label htmlFor="cod" className="flex-1 cursor-pointer flex items-center gap-2">
-                      <Banknote className="h-5 w-5 text-[#10B981]" />
+                      <Banknote className="h-5 w-5 text-[var(--color-success)]" />
                       <div>
                         <p className="font-medium">Kapıda Ödeme</p>
                         <p className="text-xs text-gray-500">Ürün tesliminde nakit ödeme</p>
@@ -212,7 +214,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="demo_payment" id="demo_payment" />
                     <Label htmlFor="demo_payment" className="flex-1 cursor-pointer flex items-center gap-2">
-                      <CreditCard className="h-5 w-5 text-[#F27A1A]" />
+                      <CreditCard className="h-5 w-5 text-[var(--color-primary)]" />
                       <div>
                         <p className="font-medium">Demo Ödeme</p>
                         <p className="text-xs text-gray-500">Test amaçlı anında onaylı ödeme</p>
@@ -269,13 +271,13 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Toplam</span>
-                  <span className="text-[#F27A1A]">{formatPrice(total)}</span>
+                  <span className="text-[var(--color-primary)]">{formatPrice(total)}</span>
                 </div>
 
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-12 text-base font-bold bg-[#F27A1A] hover:bg-[#D4630E]"
+                  className="w-full h-12 text-base font-bold bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]"
                 >
                   {isSubmitting ? 'Sipariş Oluşturuluyor...' : 'Siparişi Tamamla'}
                 </Button>

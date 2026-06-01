@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, LayoutGrid, Search, Heart, User, ShoppingCart } from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
+import { useBrand } from '@/lib/brand-context'
 
 interface NavItem {
   href: string
@@ -16,6 +17,7 @@ interface NavItem {
 export default function MobileBottomNav() {
   const pathname = usePathname()
   const { items } = useCartStore()
+  const { theme } = useBrand()
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -26,6 +28,11 @@ export default function MobileBottomNav() {
     { href: '/favorilerim', label: 'Favoriler', Icon: Heart },
     { href: '/hesabim', label: 'Hesabım', Icon: User, badge: cartItemCount },
   ]
+
+  // Theme color shortcuts
+  const primary = theme.colorPrimary
+  const textMuted = theme.colorTextMuted
+  const border = theme.colorBorder
 
   function isActive(href: string): boolean {
     if (href === '/') return pathname === '/'
@@ -40,7 +47,7 @@ export default function MobileBottomNav() {
       {/* Shadow layer */}
       <div className="h-px bg-gradient-to-b from-transparent to-black/5" />
       <div className="shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.12)]">
-        <div className="bg-white border-t border-[#E2E5EA]">
+        <div className="bg-white border-t" style={{ borderColor: border }}>
           <div className="flex items-end justify-around h-16">
             {navItems.map((item) => {
               const active = isActive(item.href)
@@ -53,10 +60,16 @@ export default function MobileBottomNav() {
                     href={item.href}
                     className="flex flex-col items-center justify-center -mt-5 relative"
                   >
-                    <div className="w-12 h-12 rounded-full bg-[#F27A1A] shadow-lg shadow-[#F27A1A]/30 flex items-center justify-center transition-transform active:scale-95">
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center transition-transform active:scale-95"
+                      style={{
+                        background: primary,
+                        boxShadow: `0 4px 14px ${primary}4D`,
+                      }}
+                    >
                       <item.Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
                     </div>
-                    <span className="text-[10px] font-semibold text-[#F27A1A] mt-0.5">
+                    <span className="text-[10px] font-semibold mt-0.5" style={{ color: primary }}>
                       {item.label}
                     </span>
                   </Link>
@@ -71,26 +84,30 @@ export default function MobileBottomNav() {
                 >
                   <div className="relative">
                     <item.Icon
-                      className={`w-5 h-5 transition-colors ${
-                        active ? 'text-[#F27A1A]' : 'text-[#8C95A6]'
-                      }`}
+                      className="w-5 h-5 transition-colors"
+                      style={{ color: active ? primary : textMuted }}
                       strokeWidth={active ? 2.5 : 2}
                     />
                     {item.badge !== undefined && item.badge > 0 && (
-                      <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-[#F27A1A] text-white text-[9px] font-bold px-1 leading-none">
+                      <span
+                        className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 flex items-center justify-center rounded-full text-white text-[9px] font-bold px-1 leading-none"
+                        style={{ background: primary }}
+                      >
                         {item.badge > 99 ? '99+' : item.badge}
                       </span>
                     )}
                   </div>
                   <span
-                    className={`text-[10px] font-medium transition-colors ${
-                      active ? 'text-[#F27A1A]' : 'text-[#8C95A6]'
-                    }`}
+                    className="text-[10px] font-medium transition-colors"
+                    style={{ color: active ? primary : textMuted }}
                   >
                     {item.label}
                   </span>
                   {active && (
-                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#F27A1A] rounded-full" />
+                    <span
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
+                      style={{ background: primary }}
+                    />
                   )}
                 </Link>
               )

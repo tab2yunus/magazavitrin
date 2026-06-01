@@ -20,6 +20,9 @@ import {
   LogOut,
   ChevronLeft,
   Database,
+  Sparkles,
+  Palette,
+  ChevronDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
@@ -57,16 +60,23 @@ const menuItems = [
   { id: 'coupons', label: 'Kuponlar', icon: Ticket },
   { id: 'reviews', label: 'Yorumlar', icon: Star },
   { id: 'questions', label: 'Sorular', icon: HelpCircle },
-  { id: 'settings', label: 'Ayarlar', icon: Settings },
+  { id: 'settings', label: 'Ayarlar', icon: Settings, children: [
+    { id: 'brand_identity', label: 'Marka Kimliği', icon: Sparkles },
+    { id: 'theme', label: 'Tema', icon: Palette },
+  ]},
   { id: 'scraper', label: 'MOTOLUX Scraper', icon: Database },
 ]
 
 function SidebarContent({ activeTab, setActiveTab, onBack, onMobileClose }: { activeTab: string; setActiveTab: (id: string) => void; onBack: () => void; onMobileClose?: () => void }) {
+  const [settingsOpen, setSettingsOpen] = React.useState(true)
+  const isSettingsChild = (id: string) => ['settings', 'brand_identity', 'theme'].includes(id)
+  const isSettingsActive = isSettingsChild(activeTab)
+
   return (
-    <div className="flex flex-col h-full bg-[#0F1B2D]">
+    <div className="flex flex-col h-full bg-[var(--color-secondary)]">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-        <div className="w-9 h-9 rounded-lg bg-[#F27A1A] flex items-center justify-center">
+        <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/25">
           <Store className="w-5 h-5 text-white" />
         </div>
         <div>
@@ -81,6 +91,67 @@ function SidebarContent({ activeTab, setActiveTab, onBack, onMobileClose }: { ac
           {menuItems.map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
+            const hasChildren = item.children && item.children.length > 0
+
+            if (hasChildren) {
+              return (
+                <div key={item.id}>
+                  <button
+                    onClick={() => setSettingsOpen(!settingsOpen)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isSettingsActive
+                        ? 'bg-white/15 text-white'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${settingsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {settingsOpen && (
+                    <div className="ml-4 mt-1 space-y-0.5">
+                      {/* Ayarlar genel */}
+                      <button
+                        onClick={() => {
+                          setActiveTab('settings')
+                          onMobileClose?.()
+                        }}
+                        className={`w-full flex items-center gap-3 pl-3 pr-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                          activeTab === 'settings'
+                            ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25 font-medium'
+                            : 'text-white/60 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <Settings className="w-4 h-4 flex-shrink-0" />
+                        <span>Genel Ayarlar</span>
+                      </button>
+                      {item.children!.map((child) => {
+                        const ChildIcon = child.icon
+                        const isChildActive = activeTab === child.id
+                        return (
+                          <button
+                            key={child.id}
+                            onClick={() => {
+                              setActiveTab(child.id)
+                              onMobileClose?.()
+                            }}
+                            className={`w-full flex items-center gap-3 pl-3 pr-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                              isChildActive
+                                ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25 font-medium'
+                                : 'text-white/60 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <ChildIcon className="w-4 h-4 flex-shrink-0" />
+                            <span>{child.label}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            }
+
             return (
               <button
                 key={item.id}
@@ -90,7 +161,7 @@ function SidebarContent({ activeTab, setActiveTab, onBack, onMobileClose }: { ac
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#F27A1A] text-white shadow-lg shadow-[#F27A1A]/25'
+                    ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -142,16 +213,20 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
       case 'coupons': return <CouponsTab />
       case 'reviews': return <ReviewsTab />
       case 'questions': return <QuestionsTab />
-      case 'settings': return <SettingsTab />
+      case 'settings': return <SettingsTab initialTab="general" />
+      case 'brand_identity': return <SettingsTab initialTab="brand_identity" />
+      case 'theme': return <SettingsTab initialTab="theme" />
       case 'scraper': return <ScraperTab />
       default: return <DashboardTab />
     }
   }
 
   const currentMenu = menuItems.find(m => m.id === activeTab)
+  const currentChildMenu = menuItems.find(m => m.children?.some(c => c.id === activeTab))
+  const currentLabel = currentMenu?.label || (currentChildMenu?.children?.find(c => c.id === activeTab)?.label) || 'Dashboard'
 
   return (
-    <div className="flex h-screen bg-[#F4F5F7] overflow-hidden">
+    <div className="flex h-screen bg-[var(--color-surface)] overflow-hidden">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 flex-shrink-0">
         <SidebarContent
@@ -192,7 +267,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
 
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                {currentMenu?.label || 'Dashboard'}
+                {currentLabel}
               </h2>
               <p className="text-xs text-gray-500 hidden sm:block">MağazaVitrin Admin Paneli</p>
             </div>
@@ -200,7 +275,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-              <div className="w-8 h-8 rounded-full bg-[#0F1B2D] flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-8 h-8 rounded-full bg-[var(--color-secondary)] flex items-center justify-center text-white text-xs font-bold">
                 A
               </div>
               <span className="font-medium">Admin</span>

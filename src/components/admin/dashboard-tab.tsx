@@ -42,7 +42,7 @@ const statusColors: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-800',
 }
 
-const chartColors = ['#F27A1A', '#0F1B2D', '#10B981', '#EF4444', '#9B59B6']
+const chartColors = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-success)', 'var(--color-danger)', '#9B59B6']
 
 export default function DashboardTab() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -81,8 +81,8 @@ export default function DashboardTab() {
   if (!data) return <div className="text-center py-10 text-gray-500">Veri yüklenemedi</div>
 
   const statCards = [
-    { title: 'Toplam Ürün', value: data.totalProducts, icon: Package, color: 'text-[#F27A1A]', bg: 'bg-orange-50' },
-    { title: 'Toplam Sipariş', value: data.totalOrders, icon: ShoppingCart, color: 'text-[#0F1B2D]', bg: 'bg-blue-50' },
+    { title: 'Toplam Ürün', value: data.totalProducts, icon: Package, color: 'text-[var(--color-primary)]', bg: 'bg-orange-50' },
+    { title: 'Toplam Sipariş', value: data.totalOrders, icon: ShoppingCart, color: 'text-[var(--color-secondary)]', bg: 'bg-blue-50' },
     { title: 'Toplam Müşteri', value: data.totalCustomers, icon: Users, color: 'text-green-600', bg: 'bg-green-50' },
     { title: 'Toplam Mağaza', value: data.totalStores, icon: Store, color: 'text-purple-600', bg: 'bg-purple-50' },
     { title: 'Toplam Ciro', value: `₺${data.totalRevenue.toLocaleString('tr-TR')}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },

@@ -38,6 +38,9 @@ import {
   Eye,
   ExternalLink,
   Info,
+  Palette,
+  Sparkles,
+  Check,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -184,6 +187,40 @@ const DEFAULT_SETTINGS: Omit<SettingItem, 'id'>[] = [
   { key: 'legal_kvkk_page', value: '', type: 'text', group: 'legal', label: 'KVKK Aydınlatma Sayfası' },
   { key: 'legal_return_page', value: '', type: 'text', group: 'legal', label: 'İade/Değişim Sayfası' },
   { key: 'legal_contact_page', value: '', type: 'text', group: 'legal', label: 'İletişim Sayfası' },
+
+  // Brand Identity
+  { key: 'brand_name', value: 'MağazaVitrin', type: 'text', group: 'brand_identity', label: 'Marka Adı' },
+  { key: 'brand_short_name', value: 'MV', type: 'text', group: 'brand_identity', label: 'Kısa Marka Adı' },
+  { key: 'brand_slogan', value: "Türkiye'nin Motosiklet Yedek Parça Pazaryeri", type: 'text', group: 'brand_identity', label: 'Marka Sloganı' },
+  { key: 'brand_description', value: "Türkiye'nin en büyük motosiklet yedek parça pazaryeri. Orijinal ve kaliteli motosiklet parçalarını en uygun fiyatlarla sizlere sunuyoruz.", type: 'textarea', group: 'brand_identity', label: 'Marka Açıklaması' },
+  { key: 'brand_logo', value: '', type: 'image', group: 'brand_identity', label: 'Logo' },
+  { key: 'brand_logo_dark', value: '', type: 'image', group: 'brand_identity', label: 'Koyu Tema Logo' },
+  { key: 'brand_mobile_logo', value: '', type: 'image', group: 'brand_identity', label: 'Mobil Logo' },
+  { key: 'brand_footer_logo', value: '', type: 'image', group: 'brand_identity', label: 'Footer Logo' },
+  { key: 'brand_favicon', value: '', type: 'image', group: 'brand_identity', label: 'Favicon' },
+  { key: 'default_product_image', value: '', type: 'image', group: 'brand_identity', label: 'Varsayılan Ürün Görseli' },
+  { key: 'default_category_image', value: '', type: 'image', group: 'brand_identity', label: 'Varsayılan Kategori Görseli' },
+  { key: 'default_store_image', value: '', type: 'image', group: 'brand_identity', label: 'Varsayılan Mağaza Görseli' },
+
+  // Theme
+  { key: 'theme_color_primary', value: '#F27A1A', type: 'color', group: 'theme', label: 'Ana Renk' },
+  { key: 'theme_color_primary_dark', value: '#D4630E', type: 'color', group: 'theme', label: 'Ana Renk Koyu' },
+  { key: 'theme_color_primary_light', value: '#FFF3E8', type: 'color', group: 'theme', label: 'Ana Renk Açık' },
+  { key: 'theme_color_secondary', value: '#0F1B2D', type: 'color', group: 'theme', label: 'İkincil Renk' },
+  { key: 'theme_color_secondary_light', value: '#1B2D45', type: 'color', group: 'theme', label: 'İkincil Renk Açık' },
+  { key: 'theme_color_accent', value: '#FF8C38', type: 'color', group: 'theme', label: 'Vurgu Rengi' },
+  { key: 'theme_color_background', value: '#FFFFFF', type: 'color', group: 'theme', label: 'Arka Plan Rengi' },
+  { key: 'theme_color_surface', value: '#F4F5F7', type: 'color', group: 'theme', label: 'Yüzey Rengi' },
+  { key: 'theme_color_card', value: '#FFFFFF', type: 'color', group: 'theme', label: 'Kart Rengi' },
+  { key: 'theme_color_text', value: '#0F1B2D', type: 'color', group: 'theme', label: 'Yazı Rengi' },
+  { key: 'theme_color_text_secondary', value: '#4A5568', type: 'color', group: 'theme', label: 'İkincil Yazı Rengi' },
+  { key: 'theme_color_text_muted', value: '#8C95A6', type: 'color', group: 'theme', label: 'Soluk Yazı Rengi' },
+  { key: 'theme_color_border', value: '#E2E5EA', type: 'color', group: 'theme', label: 'Border Rengi' },
+  { key: 'theme_color_success', value: '#10B981', type: 'color', group: 'theme', label: 'Başarı Rengi' },
+  { key: 'theme_color_warning', value: '#F59E0B', type: 'color', group: 'theme', label: 'Uyarı Rengi' },
+  { key: 'theme_color_danger', value: '#EF4444', type: 'color', group: 'theme', label: 'Hata Rengi' },
+  { key: 'theme_color_info', value: '#3B82F6', type: 'color', group: 'theme', label: 'Bilgi Rengi' },
+  { key: 'theme_name', value: 'classic', type: 'text', group: 'theme', label: 'Tema Adı' },
 ]
 
 // ─── Default SEO Settings ───────────────────────────────────
@@ -198,6 +235,8 @@ const DEFAULT_SEO_SETTINGS: Omit<SeoSettingItem, 'id'>[] = [
 // ─── Tab Definitions ────────────────────────────────────────
 const TAB_CONFIG = [
   { value: 'general', label: 'Genel Ayarlar', icon: Settings },
+  { value: 'brand_identity', label: 'Marka Kimliği', icon: Sparkles },
+  { value: 'theme', label: 'Tema', icon: Palette },
   { value: 'identity', label: 'Site Kimliği', icon: ImageIcon },
   { value: 'contact', label: 'İletişim', icon: Phone },
   { value: 'social', label: 'Sosyal Medya', icon: Share2 },
@@ -248,13 +287,13 @@ const LEGAL_TYPE_LABELS: Record<string, string> = {
 }
 
 // ─── Main Component ─────────────────────────────────────────
-export default function SettingsTab() {
+export default function SettingsTab({ initialTab }: { initialTab?: string } = {}) {
   const [settings, setSettings] = useState<SettingItem[]>([])
   const [seoSettings, setSeoSettings] = useState<SeoSettingItem[]>([])
   const [legalPages, setLegalPages] = useState<LegalPageItem[]>([])
   const [loading, setLoading] = useState(true)
   const [savingGroup, setSavingGroup] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState('general')
+  const [activeTab, setActiveTab] = useState(initialTab || 'general')
   const [editedValues, setEditedValues] = useState<Record<string, string>>({})
   const [editedSeoSettings, setEditedSeoSettings] = useState<Record<string, { titleTemplate: string; descriptionTemplate: string }>>({})
   const [showPreview, setShowPreview] = useState(false)
@@ -475,7 +514,7 @@ export default function SettingsTab() {
   const DEFAULT_ROBOTS = `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: https://example.com/sitemap.xml`
 
   // ─── Field Renderer ───────────────────────────────────────
-  const renderField = (key: string, type: 'text' | 'textarea' | 'number' | 'image' | 'boolean' = 'text', placeholder?: string) => {
+  const renderField = (key: string, type: 'text' | 'textarea' | 'number' | 'image' | 'boolean' | 'color' = 'text', placeholder?: string) => {
     const setting = settings.find(s => s.key === key)
     const label = setting?.label || DEFAULT_SETTINGS.find(d => d.key === key)?.label || key
 
@@ -489,6 +528,31 @@ export default function SettingsTab() {
             checked={getBoolValue(key)}
             onCheckedChange={(checked) => setBoolValue(key, checked)}
           />
+        </div>
+      )
+    }
+
+    if (type === 'color' || setting?.type === 'color') {
+      const color = getValue(key)
+      return (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">{label}</Label>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <input
+                type="color"
+                value={color || '#000000'}
+                onChange={(e) => setValue(key, e.target.value)}
+                className="w-10 h-10 rounded-lg border-2 border-gray-200 cursor-pointer p-0.5"
+              />
+            </div>
+            <Input
+              value={color}
+              onChange={(e) => setValue(key, e.target.value)}
+              placeholder="#000000"
+              className="flex-1 font-mono text-sm"
+            />
+          </div>
         </div>
       )
     }
@@ -609,7 +673,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('general')}
           disabled={savingGroup === 'general'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'general' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -653,7 +717,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('identity')}
           disabled={savingGroup === 'identity'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'identity' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -712,7 +776,7 @@ export default function SettingsTab() {
           <Button
             onClick={() => saveGroup('contact')}
             disabled={savingGroup === 'contact'}
-            className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
           >
             {savingGroup === 'contact' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Kaydet
@@ -763,7 +827,7 @@ export default function SettingsTab() {
           <Button
             onClick={() => saveGroup('social')}
             disabled={savingGroup === 'social'}
-            className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
           >
             {savingGroup === 'social' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Kaydet
@@ -816,7 +880,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('seo')}
           disabled={savingGroup === 'seo'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'seo' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -913,7 +977,7 @@ export default function SettingsTab() {
                       {edited.titleTemplate && (
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Başlık:</p>
-                          <p className="text-sm font-medium text-[#0F1B2D]">{renderTemplatePreview(edited.titleTemplate, pageType)}</p>
+                          <p className="text-sm font-medium text-[var(--color-text)]">{renderTemplatePreview(edited.titleTemplate, pageType)}</p>
                         </div>
                       )}
                       {edited.descriptionTemplate && (
@@ -936,7 +1000,7 @@ export default function SettingsTab() {
           <Button
             onClick={saveSeoSettings}
             disabled={savingGroup === 'meta'}
-            className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
           >
             {savingGroup === 'meta' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Kaydet
@@ -973,7 +1037,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('sitemap')}
           disabled={savingGroup === 'sitemap'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'sitemap' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -1035,7 +1099,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('robots')}
           disabled={savingGroup === 'robots'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'robots' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -1086,7 +1150,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('schema')}
           disabled={savingGroup === 'schema'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'schema' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -1144,7 +1208,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('og')}
           disabled={savingGroup === 'og'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'og' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -1187,8 +1251,8 @@ export default function SettingsTab() {
           </CardHeader>
           <CardContent>
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center">
-              <Construction className="w-16 h-16 text-[#F27A1A] mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">
+              <Construction className="w-16 h-16 text-[var(--color-primary)] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">
                 {getValue('maintenance_title') || 'Yakında Geri Döneceğiz'}
               </h2>
               <p className="text-gray-600 max-w-md mx-auto mb-4">
@@ -1215,7 +1279,7 @@ export default function SettingsTab() {
         <Button
           onClick={() => saveGroup('maintenance')}
           disabled={savingGroup === 'maintenance'}
-          className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
         >
           {savingGroup === 'maintenance' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Kaydet
@@ -1309,9 +1373,326 @@ export default function SettingsTab() {
           <Button
             onClick={() => saveGroup('legal')}
             disabled={savingGroup === 'legal'}
-            className="bg-[#F27A1A] hover:bg-[#e06d10] text-white"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
           >
             {savingGroup === 'legal' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+            Kaydet
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Theme Presets ────────────────────────────────────────
+  const THEME_PRESETS_ADMIN: Record<string, { label: string; colors: Record<string, string> }> = {
+    classic: {
+      label: 'Classic',
+      colors: {
+        theme_color_primary: '#F27A1A', theme_color_primary_dark: '#D4630E', theme_color_primary_light: '#FFF3E8',
+        theme_color_secondary: '#0F1B2D', theme_color_secondary_light: '#1B2D45', theme_color_accent: '#FF8C38',
+        theme_color_background: '#FFFFFF', theme_color_surface: '#F4F5F7', theme_color_card: '#FFFFFF',
+        theme_color_text: '#0F1B2D', theme_color_text_secondary: '#4A5568', theme_color_text_muted: '#8C95A6',
+        theme_color_border: '#E2E5EA', theme_color_success: '#10B981', theme_color_warning: '#F59E0B',
+        theme_color_danger: '#EF4444', theme_color_info: '#3B82F6',
+      },
+    },
+    midnight: {
+      label: 'Midnight',
+      colors: {
+        theme_color_primary: '#6366F1', theme_color_primary_dark: '#4F46E5', theme_color_primary_light: '#EEF2FF',
+        theme_color_secondary: '#0F172A', theme_color_secondary_light: '#1E293B', theme_color_accent: '#818CF8',
+        theme_color_background: '#FFFFFF', theme_color_surface: '#F1F5F9', theme_color_card: '#FFFFFF',
+        theme_color_text: '#0F172A', theme_color_text_secondary: '#475569', theme_color_text_muted: '#94A3B8',
+        theme_color_border: '#E2E8F0', theme_color_success: '#10B981', theme_color_warning: '#F59E0B',
+        theme_color_danger: '#EF4444', theme_color_info: '#3B82F6',
+      },
+    },
+    carbon: {
+      label: 'Carbon',
+      colors: {
+        theme_color_primary: '#10B981', theme_color_primary_dark: '#059669', theme_color_primary_light: '#ECFDF5',
+        theme_color_secondary: '#111827', theme_color_secondary_light: '#1F2937', theme_color_accent: '#34D399',
+        theme_color_background: '#FFFFFF', theme_color_surface: '#F3F4F6', theme_color_card: '#FFFFFF',
+        theme_color_text: '#111827', theme_color_text_secondary: '#4B5563', theme_color_text_muted: '#9CA3AF',
+        theme_color_border: '#E5E7EB', theme_color_success: '#10B981', theme_color_warning: '#F59E0B',
+        theme_color_danger: '#EF4444', theme_color_info: '#3B82F6',
+      },
+    },
+    titanium: {
+      label: 'Titanium',
+      colors: {
+        theme_color_primary: '#E11D48', theme_color_primary_dark: '#BE123C', theme_color_primary_light: '#FFF1F2',
+        theme_color_secondary: '#1C1917', theme_color_secondary_light: '#292524', theme_color_accent: '#FB7185',
+        theme_color_background: '#FFFFFF', theme_color_surface: '#F5F5F4', theme_color_card: '#FFFFFF',
+        theme_color_text: '#1C1917', theme_color_text_secondary: '#57534E', theme_color_text_muted: '#A8A29E',
+        theme_color_border: '#E7E5E4', theme_color_success: '#10B981', theme_color_warning: '#F59E0B',
+        theme_color_danger: '#EF4444', theme_color_info: '#3B82F6',
+      },
+    },
+  }
+
+  // Apply theme preset
+  const applyThemePreset = (presetName: string) => {
+    const preset = THEME_PRESETS_ADMIN[presetName]
+    if (!preset) return
+
+    // Set all theme color values
+    Object.entries(preset.colors).forEach(([key, value]) => {
+      setValue(key, value)
+    })
+    // Set theme name
+    setValue('theme_name', presetName)
+    toast.success(`${preset.label} teması uygulandı. Kaydetmeyi unutmayın!`)
+  }
+
+  const renderBrandIdentityTab = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[var(--color-primary)]" />
+            Marka Bilgileri
+          </CardTitle>
+          <CardDescription>Markanızın temel kimlik bilgilerini yapılandırın</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderField('brand_name', 'text', 'Marka adınız')}
+            {renderField('brand_short_name', 'text', 'Kısa ad')}
+          </div>
+          {renderField('brand_slogan', 'text', 'Marka sloganınız')}
+          {renderField('brand_description', 'textarea', 'Markanızın kısa açıklaması')}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-[var(--color-primary)]" />
+            Marka Logoları
+          </CardTitle>
+          <CardDescription>Farklı kullanım alanları için logo görsellerini URL olarak girin</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderField('brand_logo', 'image')}
+            {renderField('brand_logo_dark', 'image')}
+            {renderField('brand_mobile_logo', 'image')}
+            {renderField('brand_footer_logo', 'image')}
+            {renderField('brand_favicon', 'image')}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-[var(--color-primary)]" />
+            Varsayılan Görseller
+          </CardTitle>
+          <CardDescription>Ürün, kategori ve mağaza için varsayılan görseller</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderField('default_product_image', 'image')}
+            {renderField('default_category_image', 'image')}
+            {renderField('default_store_image', 'image')}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button
+          onClick={() => saveGroup('brand_identity')}
+          disabled={savingGroup === 'brand_identity'}
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
+        >
+          {savingGroup === 'brand_identity' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+          Kaydet
+        </Button>
+      </div>
+    </div>
+  )
+
+  const renderThemeTab = () => {
+    const currentPreset = getValue('theme_name') || 'classic'
+
+    // Live preview colors (fall back to defaults if empty)
+    const previewPrimary = getValue('theme_color_primary') || '#F27A1A'
+    const previewPrimaryLight = getValue('theme_color_primary_light') || '#FFF3E8'
+    const previewSecondary = getValue('theme_color_secondary') || '#0F1B2D'
+    const previewSecondaryLight = getValue('theme_color_secondary_light') || '#1B2D45'
+    const previewAccent = getValue('theme_color_accent') || '#FF8C38'
+    const previewSurface = getValue('theme_color_surface') || '#F4F5F7'
+    const previewCard = getValue('theme_color_card') || '#FFFFFF'
+    const previewText = getValue('theme_color_text') || '#0F1B2D'
+    const previewTextSecondary = getValue('theme_color_text_secondary') || '#4A5568'
+    const previewTextMuted = getValue('theme_color_text_muted') || '#8C95A6'
+    const previewBorder = getValue('theme_color_border') || '#E2E5EA'
+
+    return (
+      <div className="space-y-6">
+        {/* Theme Presets */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Palette className="w-4 h-4 text-[var(--color-primary)]" />
+              Tema Ön Ayarları
+            </CardTitle>
+            <CardDescription>Bir ön ayar seçerek tüm renkleri otomatik olarak yapılandırın</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {Object.entries(THEME_PRESETS_ADMIN).map(([key, preset]) => {
+                const isActive = currentPreset === key
+                return (
+                  <button
+                    key={key}
+                    onClick={() => applyThemePreset(key)}
+                    className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                      isActive
+                        ? 'border-[var(--color-primary)] shadow-md bg-[var(--color-primary-light)]'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    {isActive && (
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                    {/* Color Swatch Preview */}
+                    <div className="flex gap-1">
+                      <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: preset.colors.theme_color_primary }} />
+                      <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: preset.colors.theme_color_secondary }} />
+                      <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: preset.colors.theme_color_accent }} />
+                      <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: preset.colors.theme_color_surface }} />
+                    </div>
+                    <span className="text-sm font-medium text-[var(--color-text)]">{preset.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Live Preview */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Eye className="w-4 h-4 text-[var(--color-primary)]" />
+              Canlı Önizleme
+            </CardTitle>
+            <CardDescription>Seçtiğiniz temanın nasıl görüneceğini önizleyin</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border overflow-hidden" style={{ borderColor: previewBorder }}>
+              {/* Header bar */}
+              <div className="px-4 py-2.5 flex items-center gap-3" style={{ backgroundColor: previewSecondary }}>
+                <div className="w-6 h-6 rounded" style={{ backgroundColor: previewPrimary }} />
+                <span className="text-white font-semibold text-sm">MağazaVitrin</span>
+                <div className="ml-auto flex gap-2">
+                  <div className="w-12 h-5 rounded text-[8px] flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}>Menü</div>
+                </div>
+              </div>
+              {/* Hero section */}
+              <div className="px-4 py-5 text-center" style={{ backgroundColor: previewPrimaryLight }}>
+                <div className="text-lg font-bold mb-1" style={{ color: previewText }}>Yedek Parça Pazaryeri</div>
+                <div className="text-xs mb-3" style={{ color: previewTextSecondary }}>Binlerce motosiklet parçası burada</div>
+                <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-lg text-white text-xs font-medium" style={{ backgroundColor: previewPrimary }}>
+                  Ürünleri Keşfet
+                </div>
+              </div>
+              {/* Card grid */}
+              <div className="p-3 grid grid-cols-3 gap-2" style={{ backgroundColor: previewSurface }}>
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="rounded-lg overflow-hidden" style={{ backgroundColor: previewCard, border: `1px solid ${previewBorder}` }}>
+                    <div className="h-12" style={{ backgroundColor: previewPrimaryLight }} />
+                    <div className="p-2">
+                      <div className="h-1.5 rounded mb-1.5 w-3/4" style={{ backgroundColor: previewText }} />
+                      <div className="h-1 rounded mb-1 w-1/2" style={{ backgroundColor: previewTextMuted }} />
+                      <div className="h-1.5 rounded w-2/3" style={{ backgroundColor: previewPrimary }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Footer */}
+              <div className="px-4 py-2.5 flex items-center gap-2" style={{ backgroundColor: previewSecondary }}>
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: previewAccent }} />
+                <div className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)' }}>© 2024 MağazaVitrin</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Theme Colors */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">Ana Renkler</CardTitle>
+            <CardDescription>Sitenizin ana renk paletini yapılandırın</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {renderField('theme_color_primary', 'color')}
+              {renderField('theme_color_primary_dark', 'color')}
+              {renderField('theme_color_primary_light', 'color')}
+              {renderField('theme_color_secondary', 'color')}
+              {renderField('theme_color_secondary_light', 'color')}
+              {renderField('theme_color_accent', 'color')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">Arka Plan & Yüzey</CardTitle>
+            <CardDescription>Sayfa arka planı ve kart/yüzey renkleri</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {renderField('theme_color_background', 'color')}
+              {renderField('theme_color_surface', 'color')}
+              {renderField('theme_color_card', 'color')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">Yazı Renkleri</CardTitle>
+            <CardDescription>Başlıklar, gövde metni ve soluk yazılar için renkler</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {renderField('theme_color_text', 'color')}
+              {renderField('theme_color_text_secondary', 'color')}
+              {renderField('theme_color_text_muted', 'color')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">Border & Durum Renkleri</CardTitle>
+            <CardDescription>Kenarlıklar ve sistem durumu renkleri</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {renderField('theme_color_border', 'color')}
+              {renderField('theme_color_success', 'color')}
+              {renderField('theme_color_warning', 'color')}
+              {renderField('theme_color_danger', 'color')}
+              {renderField('theme_color_info', 'color')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end">
+          <Button
+            onClick={() => saveGroup('theme')}
+            disabled={savingGroup === 'theme'}
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
+          >
+            {savingGroup === 'theme' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Kaydet
           </Button>
         </div>
@@ -1322,6 +1703,8 @@ export default function SettingsTab() {
   // ─── Tab Content Map ──────────────────────────────────────
   const tabContentMap: Record<string, () => React.ReactNode> = {
     general: renderGeneralTab,
+    brand_identity: renderBrandIdentityTab,
+    theme: renderThemeTab,
     identity: renderIdentityTab,
     contact: renderContactTab,
     social: renderSocialTab,
@@ -1340,7 +1723,7 @@ export default function SettingsTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[#0F1B2D]">Site Ayarları</h3>
+          <h3 className="text-lg font-semibold text-[var(--color-text)]">Site Ayarları</h3>
           <p className="text-sm text-gray-500">Sitenizin tüm ayarlarını bu panelden yönetin</p>
         </div>
         {settings.length === 0 && (
@@ -1361,7 +1744,7 @@ export default function SettingsTab() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="text-xs px-3 py-2 data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white"
+                  className="text-xs px-3 py-2 data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white"
                 >
                   <Icon className="w-3.5 h-3.5 mr-1.5" />
                   <span className="hidden sm:inline">{tab.label}</span>

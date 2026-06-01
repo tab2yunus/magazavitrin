@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
+import { useBrand } from '@/lib/brand-context'
 import { Package, ChevronRight } from 'lucide-react'
 import type { Order } from '@/types'
 import { formatPrice, getStatusColor, getStatusText } from '@/lib/storefront-utils'
@@ -15,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export default function OrdersPage() {
   const router = useRouter()
   const { user, fetchUser, isLoading } = useAuthStore()
+  const { theme } = useBrand()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -55,14 +57,14 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">Siparişlerim</h1>
+      <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Siparişlerim</h1>
 
       {orders.length === 0 ? (
         <div className="text-center py-16">
           <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[#0F1B2D] mb-2">Henüz siparişiniz yok</h2>
+          <h2 className="text-xl font-bold text-[var(--color-text)] mb-2">Henüz siparişiniz yok</h2>
           <p className="text-gray-500 mb-6">Hemen alışverişe başlayın!</p>
-          <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
+          <Button onClick={() => router.push('/')} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
             Alışverişe Başla
           </Button>
         </div>
@@ -74,11 +76,11 @@ export default function OrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-[#FFF3E8] flex items-center justify-center shrink-0">
-                        <Package className="h-6 w-6 text-[#F27A1A]" />
+                      <div className="w-12 h-12 rounded-lg bg-[var(--color-primary-light)] flex items-center justify-center shrink-0">
+                        <Package className="h-6 w-6 text-[var(--color-primary)]" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-[#0F1B2D]">#{order.orderNumber}</p>
+                        <p className="font-semibold text-sm text-[var(--color-text)]">#{order.orderNumber}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           {new Date(order.createdAt).toLocaleDateString('tr-TR', {
                             day: 'numeric', month: 'long', year: 'numeric'
@@ -92,7 +94,7 @@ export default function OrdersPage() {
                         <Badge className={`${getStatusColor(order.status)} border-0 text-xs`}>
                           {getStatusText(order.status)}
                         </Badge>
-                        <p className="text-sm font-bold text-[#0F1B2D] mt-1">{formatPrice(order.totalAmount)}</p>
+                        <p className="text-sm font-bold text-[var(--color-text)] mt-1">{formatPrice(order.totalAmount)}</p>
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-400" />
                     </div>
@@ -103,7 +105,7 @@ export default function OrdersPage() {
                     <Badge className={`${getStatusColor(order.status)} border-0 text-xs`}>
                       {getStatusText(order.status)}
                     </Badge>
-                    <p className="text-sm font-bold text-[#0F1B2D]">{formatPrice(order.totalAmount)}</p>
+                    <p className="text-sm font-bold text-[var(--color-text)]">{formatPrice(order.totalAmount)}</p>
                   </div>
 
                   {order.items && (

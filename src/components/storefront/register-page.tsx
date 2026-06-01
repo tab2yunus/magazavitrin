@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
+import { useBrand } from '@/lib/brand-context'
 import { Mail, Lock, UserPlus, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { useToast } from '@/hooks/use-toast'
 export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuthStore()
+  const { theme } = useBrand()
   const { toast } = useToast()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -58,8 +60,7 @@ export default function RegisterPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-2">
             <Link href="/" className="text-3xl font-extrabold">
-              <span className="text-[#F27A1A]">Mağaza</span>
-              <span className="text-[#0F1B2D]">Vitrin</span>
+              <span className="text-[var(--color-primary)]">{theme.brandName}</span>
             </Link>
           </div>
           <CardTitle className="text-xl">Kayıt Ol</CardTitle>
@@ -132,7 +133,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 bg-[#F27A1A] hover:bg-[#D4630E] text-white font-semibold"
+              className="w-full h-11 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold"
             >
               {isLoading ? 'Kayıt olunuyor...' : (
                 <>
@@ -147,7 +148,7 @@ export default function RegisterPage() {
               Zaten hesabınız var mı?{' '}
               <Link
                 href="/giris"
-                className="text-[#F27A1A] font-semibold hover:underline"
+                className="text-[var(--color-primary)] font-semibold hover:underline"
               >
                 Giriş yapın
               </Link>

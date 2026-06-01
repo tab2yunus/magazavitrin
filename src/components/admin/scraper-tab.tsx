@@ -304,7 +304,7 @@ export default function ScraperTab() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0F1B2D] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-[var(--color-text)] flex items-center gap-2">
             <Database className="w-6 h-6" />
             Çoklu Sağlayıcı Scraper
           </h2>
@@ -316,7 +316,7 @@ export default function ScraperTab() {
             onClick={() => handleScrape(10)}
             disabled={scraping}
             variant="outline"
-            className="border-[#F27A1A] text-[#F27A1A] hover:bg-[#FFF3E8]"
+            className="border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]"
           >
             {scraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
             10 Test
@@ -325,7 +325,7 @@ export default function ScraperTab() {
             onClick={() => handleScrape(100)}
             disabled={scraping}
             variant="outline"
-            className="border-[#F27A1A] text-[#F27A1A] hover:bg-[#FFF3E8]"
+            className="border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]"
           >
             100 Çek
           </Button>
@@ -333,7 +333,7 @@ export default function ScraperTab() {
             onClick={() => handleScrape(1000)}
             disabled={scraping}
             variant="outline"
-            className="border-[#F27A1A] text-[#F27A1A] hover:bg-[#FFF3E8]"
+            className="border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]"
           >
             1000 Çek
           </Button>
@@ -344,7 +344,7 @@ export default function ScraperTab() {
               }
             }}
             disabled={scraping}
-            className="bg-[#F27A1A] hover:bg-[#D4630E] text-white"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
           >
             {scraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
             Tümünü Çek
@@ -473,7 +473,7 @@ export default function ScraperTab() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-7 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#0F1B2D]">{scrapeResult.totalScraped}</p>
+                  <p className="text-2xl font-bold text-[var(--color-text)]">{scrapeResult.totalScraped}</p>
                   <p className="text-xs text-gray-600">Çekilen</p>
                 </div>
                 <div className="text-center">
@@ -529,15 +529,15 @@ export default function ScraperTab() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <Package className="w-8 h-8 mx-auto text-[#F27A1A] mb-2" />
-            <p className="text-2xl font-bold text-[#0F1B2D]">{publishStatus.totalImported}</p>
+            <Package className="w-8 h-8 mx-auto text-[var(--color-primary)] mb-2" />
+            <p className="text-2xl font-bold text-[var(--color-text)]">{publishStatus.totalImported}</p>
             <p className="text-xs text-gray-500">İçe Aktarılan</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Database className="w-8 h-8 mx-auto text-blue-500 mb-2" />
-            <p className="text-2xl font-bold text-[#0F1B2D]">{categories.length}</p>
+            <p className="text-2xl font-bold text-[var(--color-text)]">{categories.length}</p>
             <p className="text-xs text-gray-500">Kategori</p>
           </CardContent>
         </Card>
@@ -600,7 +600,7 @@ export default function ScraperTab() {
                 <Button
                   onClick={() => handleScrape(10)}
                   disabled={scraping}
-                  className="bg-[#F27A1A] hover:bg-[#D4630E] text-white"
+                  className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
                 >
                   {scraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
                   Test Çekimi Başlat
@@ -616,11 +616,11 @@ export default function ScraperTab() {
                     <div className="flex-1 p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-[#0F1B2D] flex items-center justify-center">
-                            <Globe className="w-6 h-6 text-[#F27A1A]" />
+                          <div className="w-12 h-12 rounded-xl bg-[var(--color-secondary)] flex items-center justify-center">
+                            <Globe className="w-6 h-6 text-[var(--color-primary)]" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-[#0F1B2D]">{provider.name}</h3>
+                            <h3 className="text-lg font-bold text-[var(--color-text)]">{provider.name}</h3>
                             <div className="flex items-center gap-2 mt-0.5">
                               <Badge variant="outline" className="text-xs">{provider.type === 'web_scraper' ? 'Web Scraper' : provider.type}</Badge>
                               <Badge className={provider.isActive ? 'bg-green-100 text-green-700 hover:bg-green-100' : 'bg-red-100 text-red-700 hover:bg-red-100'}>
@@ -633,7 +633,7 @@ export default function ScraperTab() {
                           href={provider.baseUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-[#F27A1A] transition-colors"
+                          className="text-gray-400 hover:text-[var(--color-primary)] transition-colors"
                           title={provider.baseUrl}
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -642,13 +642,13 @@ export default function ScraperTab() {
 
                       <div className="text-sm text-gray-500 mb-4">
                         <span className="font-medium">URL:</span>{' '}
-                        <span className="text-[#F27A1A]">{provider.baseUrl}</span>
+                        <span className="text-[var(--color-primary)]">{provider.baseUrl}</span>
                       </div>
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div className="bg-gray-50 rounded-lg p-3 text-center">
-                          <p className="text-xl font-bold text-[#0F1B2D]">{provider.stats.totalImported}</p>
+                          <p className="text-xl font-bold text-[var(--color-text)]">{provider.stats.totalImported}</p>
                           <p className="text-xs text-gray-500">İçe Aktarılan</p>
                         </div>
                         <div className="bg-green-50 rounded-lg p-3 text-center">
@@ -698,7 +698,7 @@ export default function ScraperTab() {
                         <Button
                           onClick={() => handleScrape(0)}
                           disabled={scraping}
-                          className="w-full bg-[#F27A1A] hover:bg-[#D4630E] text-white"
+                          className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white"
                           size="sm"
                         >
                           {scraping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
@@ -708,7 +708,7 @@ export default function ScraperTab() {
                           onClick={() => handleScrape(10)}
                           disabled={scraping}
                           variant="outline"
-                          className="w-full border-[#F27A1A] text-[#F27A1A] hover:bg-[#FFF3E8]"
+                          className="w-full border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)]"
                           size="sm"
                         >
                           10 Test Çek
@@ -818,7 +818,7 @@ export default function ScraperTab() {
                     {loading ? (
                       <TableRow>
                         <TableCell colSpan={11} className="text-center py-12">
-                          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#F27A1A]" />
+                          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--color-primary)]" />
                           <p className="text-sm text-gray-500 mt-2">Yükleniyor...</p>
                         </TableCell>
                       </TableRow>
@@ -857,7 +857,7 @@ export default function ScraperTab() {
                             <TableCell className="text-xs">{product.category || '-'}</TableCell>
                             <TableCell className="text-xs">{product.brand || '-'}</TableCell>
                             <TableCell className="text-sm font-medium text-gray-700">{formatPrice(product.supplierPrice)}</TableCell>
-                            <TableCell className="text-sm font-semibold text-[#F27A1A]">{formatPrice(salePrice)}</TableCell>
+                            <TableCell className="text-sm font-semibold text-[var(--color-primary)]">{formatPrice(salePrice)}</TableCell>
                             <TableCell>
                               <Badge variant={product.stock > 0 ? 'default' : 'destructive'} className="text-xs">
                                 {product.stock > 0 ? 'Stokta' : 'Tükendi'}
@@ -1045,8 +1045,8 @@ export default function ScraperTab() {
 
       {/* Scraping Progress */}
       {scraping && (
-        <div className="fixed bottom-4 right-4 bg-[#0F1B2D] text-white rounded-xl px-6 py-4 shadow-2xl z-50 flex items-center gap-3">
-          <Loader2 className="w-5 h-5 animate-spin text-[#F27A1A]" />
+        <div className="fixed bottom-4 right-4 bg-[var(--color-secondary)] text-white rounded-xl px-6 py-4 shadow-2xl z-50 flex items-center gap-3">
+          <Loader2 className="w-5 h-5 animate-spin text-[var(--color-primary)]" />
           <div>
             <p className="font-semibold">Scraping Çalışıyor...</p>
             <p className="text-xs text-white/60">Bayi portalından ürünler çekiliyor</p>

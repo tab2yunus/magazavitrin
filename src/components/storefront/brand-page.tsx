@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
+import { useBrand } from '@/lib/brand-context'
 import ProductCard from './product-card'
 import type { Brand, Product } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ interface BrandPageProps {
 
 export default function BrandPage({ slug }: BrandPageProps) {
   const router = useRouter()
+  const { theme } = useBrand()
   const [brand, setBrand] = useState<Brand & { products?: Product[] } | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,8 +66,8 @@ export default function BrandPage({ slug }: BrandPageProps) {
   if (!brand) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#0F1B2D]">Marka bulunamadı</h2>
-        <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <h2 className="text-2xl font-bold text-[var(--color-text)]">Marka bulunamadı</h2>
+        <Button onClick={() => router.push('/')} className="mt-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           Ana Sayfaya Dön
         </Button>
       </div>
@@ -76,22 +78,22 @@ export default function BrandPage({ slug }: BrandPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
+        <Link href="/" className="hover:text-[var(--color-primary)]">Ana Sayfa</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-800 font-medium">{brand.name}</span>
+        <span className="text-[var(--color-text)] font-medium">{brand.name}</span>
       </nav>
 
       {/* Brand header */}
       <div className="bg-white border rounded-xl p-6 mb-6 flex items-center gap-6">
-        <div className="w-20 h-20 rounded-xl bg-[#F4F5F7] flex items-center justify-center shrink-0">
+        <div className="w-20 h-20 rounded-xl bg-[var(--color-surface)] flex items-center justify-center shrink-0">
           {brand.logo ? (
             <img src={brand.logo} alt={brand.name} className="w-full h-full object-cover rounded-xl" />
           ) : (
-            <span className="text-3xl font-bold text-[#F27A1A]">{brand.name[0]}</span>
+            <span className="text-3xl font-bold text-[var(--color-primary)]">{brand.name[0]}</span>
           )}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#0F1B2D]">{brand.name}</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">{brand.name}</h1>
           {brand.description && <p className="text-sm text-gray-500 mt-1">{brand.description}</p>}
           <p className="text-sm text-gray-400 mt-1">{products.length} ürün</p>
         </div>
@@ -100,7 +102,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
       {/* Sort */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-500">
-          <span className="font-semibold text-[#0F1B2D]">{products.length}</span> ürün
+          <span className="font-semibold text-[var(--color-text)]">{products.length}</span> ürün
         </p>
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger className="w-40">

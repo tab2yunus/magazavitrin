@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, MapPin, Star, Users, ShoppingBag, MessageCircle } from 'lucide-react'
+import { useBrand } from '@/lib/brand-context'
 import ProductCard from './product-card'
 import type { Store as StoreType, Product, StoreQuestion } from '@/types'
 import { formatPrice } from '@/lib/storefront-utils'
@@ -20,6 +21,7 @@ interface StorePageProps {
 
 export default function StorePage({ slug }: StorePageProps) {
   const router = useRouter()
+  const { theme } = useBrand()
   const [store, setStore] = useState<(StoreType & { products?: any[]; questions?: StoreQuestion[] }) | null>(null)
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState('newest')
@@ -69,8 +71,8 @@ export default function StorePage({ slug }: StorePageProps) {
   if (!store) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#0F1B2D]">Mağaza bulunamadı</h2>
-        <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+        <h2 className="text-2xl font-bold text-[var(--color-text)]">Mağaza bulunamadı</h2>
+        <Button onClick={() => router.push('/')} className="mt-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           Ana Sayfaya Dön
         </Button>
       </div>
@@ -81,14 +83,14 @@ export default function StorePage({ slug }: StorePageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
+        <Link href="/" className="hover:text-[var(--color-primary)]">Ana Sayfa</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-800 font-medium">{store.name}</span>
+        <span className="text-[var(--color-text)] font-medium">{store.name}</span>
       </nav>
 
       {/* Cover & Logo */}
       <div className="relative rounded-xl overflow-hidden mb-6">
-        <div className="h-40 sm:h-56 bg-gradient-to-r from-[#0F1B2D] to-[#2D3F63]">
+        <div className="h-40 sm:h-56 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)]">
           {store.coverImage && (
             <img src={store.coverImage} alt="" className="w-full h-full object-cover" />
           )}
@@ -98,7 +100,7 @@ export default function StorePage({ slug }: StorePageProps) {
             {store.logo ? (
               <img src={store.logo} alt={store.name} className="w-full h-full object-cover rounded-lg" />
             ) : (
-              <span className="text-3xl font-bold text-[#F27A1A]">{store.name[0]}</span>
+              <span className="text-3xl font-bold text-[var(--color-primary)]">{store.name[0]}</span>
             )}
           </div>
         </div>
@@ -107,7 +109,7 @@ export default function StorePage({ slug }: StorePageProps) {
       {/* Store info */}
       <div className="mt-12 mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F1B2D]">{store.name}</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">{store.name}</h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
             {store.city && (
               <span className="flex items-center gap-1">
@@ -115,7 +117,7 @@ export default function StorePage({ slug }: StorePageProps) {
               </span>
             )}
             <span className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-[#F27A1A] fill-[#F27A1A]" /> {store.rating}
+              <Star className="h-4 w-4 text-[var(--color-primary)] fill-[var(--color-primary)]" /> {store.rating}
             </span>
             <span className="flex items-center gap-1">
               <Users className="h-4 w-4" /> {store.followerCount.toLocaleString('tr-TR')} takipçi
@@ -146,7 +148,7 @@ export default function StorePage({ slug }: StorePageProps) {
           {/* Sort */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-[#0F1B2D]">{products.length}</span> ürün
+              <span className="font-semibold text-[var(--color-text)]">{products.length}</span> ürün
             </p>
             <Select value={sort} onValueChange={setSort}>
               <SelectTrigger className="w-40">
@@ -180,9 +182,9 @@ export default function StorePage({ slug }: StorePageProps) {
                     <span className="text-sm font-medium">{q.user?.name || 'Anonim'}</span>
                     <span className="text-xs text-gray-400">{new Date(q.createdAt).toLocaleDateString('tr-TR')}</span>
                   </div>
-                  <p className="text-sm text-[#0F1B2D]">{q.question}</p>
+                  <p className="text-sm text-[var(--color-text)]">{q.question}</p>
                   {q.isAnswered && q.answer && (
-                    <div className="mt-3 pl-4 border-l-2 border-[#F27A1A]">
+                    <div className="mt-3 pl-4 border-l-2 border-[var(--color-primary)]">
                       <p className="text-sm text-gray-600">{q.answer}</p>
                     </div>
                   )}

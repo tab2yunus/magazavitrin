@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, SlidersHorizontal, X } from 'lucide-react'
+import { useBrand } from '@/lib/brand-context'
 import ProductCard from './product-card'
 import type { Product, Category, Brand } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ interface CategoryPageProps {
 
 export default function CategoryPage({ slug }: CategoryPageProps) {
   const router = useRouter()
+  const { theme } = useBrand()
   const [category, setCategory] = useState<Category | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [totalProducts, setTotalProducts] = useState(0)
@@ -84,13 +86,13 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Sub-categories */}
       {category?.children && category.children.length > 0 && (
         <div>
-          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Alt Kategoriler</h3>
+          <h3 className="font-semibold text-sm text-[var(--color-text)] mb-3">Alt Kategoriler</h3>
           <div className="space-y-2">
             {category.children.map((child) => (
               <Link
                 key={child.id}
                 href={`/kategori/${child.slug}`}
-                className="w-full text-left text-sm text-gray-600 hover:text-[#F27A1A] py-1 flex items-center gap-2"
+                className="w-full text-left text-sm text-gray-600 hover:text-[var(--color-primary)] py-1 flex items-center gap-2"
               >
                 <span>{child.icon}</span>
                 <span>{child.name}</span>
@@ -103,7 +105,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Brand filter */}
       {allBrands.length > 0 && (
         <div>
-          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Marka</h3>
+          <h3 className="font-semibold text-sm text-[var(--color-text)] mb-3">Marka</h3>
           <ScrollArea className="max-h-48">
             <div className="space-y-2">
               {allBrands.map((brand) => (
@@ -122,7 +124,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
 
       {/* Price range */}
       <div>
-        <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Fiyat Aralığı</h3>
+        <h3 className="font-semibold text-sm text-[var(--color-text)] mb-3">Fiyat Aralığı</h3>
         <Slider
           value={priceRange}
           onValueChange={setPriceRange}
@@ -139,7 +141,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Selected filters */}
       {(selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 100000) && (
         <div>
-          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-2">Seçili Filtreler</h3>
+          <h3 className="font-semibold text-sm text-[var(--color-text)] mb-2">Seçili Filtreler</h3>
           <div className="flex flex-wrap gap-2">
             {selectedBrands.map(brandId => {
               const brand = allBrands.find(b => b.id === brandId)
@@ -159,24 +161,24 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
     <div className="max-w-7xl mx-auto px-4 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
+        <Link href="/" className="hover:text-[var(--color-primary)]">Ana Sayfa</Link>
         {category?.parent && (
           <>
             <ChevronRight className="h-3.5 w-3.5" />
-            <Link href={`/kategori/${category.parent!.slug}`} className="hover:text-[#F27A1A]">
+            <Link href={`/kategori/${category.parent!.slug}`} className="hover:text-[var(--color-primary)]">
               {category.parent.name}
             </Link>
           </>
         )}
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-800 font-medium">{category?.name || slug}</span>
+        <span className="text-[var(--color-text)] font-medium">{category?.name || slug}</span>
       </nav>
 
       <div className="flex gap-6">
         {/* Desktop sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="bg-white border rounded-lg p-4 sticky top-24">
-            <h2 className="font-bold text-[#0F1B2D] mb-4">Filtreler</h2>
+            <h2 className="font-bold text-[var(--color-text)] mb-4">Filtreler</h2>
             <FilterContent />
           </div>
         </aside>
@@ -186,7 +188,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
           {/* Top bar */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-[#0F1B2D]">{totalProducts}</span> ürün bulundu
+              <span className="font-semibold text-[var(--color-text)]">{totalProducts}</span> ürün bulundu
             </p>
             <div className="flex items-center gap-3">
               {/* Mobile filter */}
@@ -197,7 +199,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-80">
-                  <SheetTitle className="font-bold text-[#0F1B2D] mb-4">Filtreler</SheetTitle>
+                  <SheetTitle className="font-bold text-[var(--color-text)] mb-4">Filtreler</SheetTitle>
                   <FilterContent />
                 </SheetContent>
               </Sheet>
@@ -232,7 +234,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
           ) : (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">Bu kategoride ürün bulunamadı.</p>
-              <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+              <Button onClick={() => router.push('/')} className="mt-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
                 Ana Sayfaya Dön
               </Button>
             </div>

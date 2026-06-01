@@ -501,7 +501,7 @@ export default function ProductsTab() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h3 className="text-lg font-semibold">Ürünler</h3>
-        <Button onClick={openNew} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+        <Button onClick={openNew} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           <Plus className="w-4 h-4 mr-2" /> Yeni Ürün
         </Button>
       </div>
@@ -577,7 +577,7 @@ export default function ProductsTab() {
                     <TableCell className="text-xs">{p.category?.name || '-'}</TableCell>
                     <TableCell className="text-xs">{p.brand?.name || '-'}</TableCell>
                     <TableCell className="text-sm">₺{p.normalPrice.toLocaleString('tr-TR')}</TableCell>
-                    <TableCell className="text-sm text-[#F27A1A] font-semibold">
+                    <TableCell className="text-sm text-[var(--color-primary)] font-semibold">
                       {p.discountPrice ? `₺${p.discountPrice.toLocaleString('tr-TR')}` : '-'}
                     </TableCell>
                     <TableCell>
@@ -610,7 +610,7 @@ export default function ProductsTab() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-[95vw] w-full max-h-[92vh] overflow-hidden flex flex-col p-0">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-lg font-semibold text-[#0F1B2D]">
+            <DialogTitle className="text-lg font-semibold text-[var(--color-text)]">
               {editing ? 'Ürün Düzenle' : 'Yeni Ürün'}
             </DialogTitle>
           </DialogHeader>
@@ -618,31 +618,31 @@ export default function ProductsTab() {
           <div className="flex-1 overflow-hidden px-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
               <TabsList className="w-full flex flex-wrap gap-1 h-auto bg-gray-50 p-1 rounded-lg mb-4">
-                <TabsTrigger value="basic" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="basic" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   <FileText className="w-3 h-3 mr-1" /> Temel Bilgiler
                 </TabsTrigger>
-                <TabsTrigger value="price" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="price" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   ₺ Fiyat & Stok
                 </TabsTrigger>
-                <TabsTrigger value="images" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="images" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   <ImagePlus className="w-3 h-3 mr-1" /> Görseller
                 </TabsTrigger>
-                <TabsTrigger value="category" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="category" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   🏷️ Kategori & Marka
                 </TabsTrigger>
-                <TabsTrigger value="description" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="description" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   📝 Açıklama
                 </TabsTrigger>
-                <TabsTrigger value="seo" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="seo" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   <Globe className="w-3 h-3 mr-1" /> SEO
                 </TabsTrigger>
-                <TabsTrigger value="social" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="social" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   <Share2 className="w-3 h-3 mr-1" /> Sosyal
                 </TabsTrigger>
-                <TabsTrigger value="schema" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="schema" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   🔧 Schema
                 </TabsTrigger>
-                <TabsTrigger value="publish" className="text-xs data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white">
+                <TabsTrigger value="publish" className="text-xs data-[state=active]:bg-[var(--color-secondary)] data-[state=active]:text-white">
                   <Calendar className="w-3 h-3 mr-1" /> Yayın Durumu
                 </TabsTrigger>
               </TabsList>
@@ -857,7 +857,7 @@ export default function ProductsTab() {
                   <div className="space-y-4">
                     {/* Add new image */}
                     <div className="p-4 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
-                      <p className="text-sm font-medium mb-3 text-[#0F1B2D]">Yeni Görsel Ekle</p>
+                      <p className="text-sm font-medium mb-3 text-[var(--color-text)]">Yeni Görsel Ekle</p>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Input
                           value={newImageUrl}
@@ -929,7 +929,7 @@ export default function ProductsTab() {
 
                             <div className="shrink-0">
                               {index === 0 && (
-                                <Badge className="bg-[#F27A1A] text-white text-xs mr-2">Kapak</Badge>
+                                <Badge className="bg-[var(--color-primary)] text-white text-xs mr-2">Kapak</Badge>
                               )}
                               <Button
                                 variant="ghost"
@@ -1200,7 +1200,7 @@ export default function ProductsTab() {
                     {/* Open Graph */}
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-medium text-sm text-[#0F1B2D] mb-2">Open Graph (Facebook, vb.)</h4>
+                        <h4 className="font-medium text-sm text-[var(--color-text)] mb-2">Open Graph (Facebook, vb.)</h4>
                         <p className="text-xs text-gray-400 mb-3">Boş bırakılırsa SEO başlığı/açıklaması/ürün görseli kullanılır</p>
                       </div>
 
@@ -1240,7 +1240,7 @@ export default function ProductsTab() {
                     {/* Twitter */}
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-medium text-sm text-[#0F1B2D] mb-2">Twitter Card</h4>
+                        <h4 className="font-medium text-sm text-[var(--color-text)] mb-2">Twitter Card</h4>
                         <p className="text-xs text-gray-400 mb-3">Boş bırakılırsa OG veya SEO değerleri kullanılır</p>
                       </div>
 
@@ -1367,7 +1367,7 @@ export default function ProductsTab() {
                           value={status.value}
                           checked={form.publishStatus === status.value}
                           onChange={e => setForm(f => ({ ...f, publishStatus: e.target.value }))}
-                          className="accent-[#0F1B2D]"
+                          className="accent-[var(--color-secondary)]"
                         />
                         <div>
                           <p className="font-medium text-sm">{status.label}</p>
@@ -1394,7 +1394,7 @@ export default function ProductsTab() {
 
           <DialogFooter className="px-6 py-4 border-t bg-gray-50">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>İptal</Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+            <Button onClick={handleSave} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
               {saving ? 'Kaydediliyor...' : 'Kaydet'}
             </Button>
           </DialogFooter>

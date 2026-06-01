@@ -255,7 +255,7 @@ export default function OrdersTab() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setDetailOpen(false)}>Kapat</Button>
-            <Button onClick={handleUpdateStatus} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+            <Button onClick={handleUpdateStatus} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
               {saving ? 'Kaydediliyor...' : 'Güncelle'}
             </Button>
           </DialogFooter>

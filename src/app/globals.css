@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
-   İKİZ MOTOR - Premium Motorcycle Marketplace
-   Custom Brand Color System
+   DYNAMIC BRAND THEME SYSTEM
+   All colors injected via CSS variables by BrandProvider
    ============================================ */
 
 @theme inline {
@@ -50,72 +50,62 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* ============================================
-     BRAND COLOR TOKENS
-     Koyu Gece Laciverti + Elektrik Turuncusu + Metalik Gri
+     DYNAMIC BRAND COLOR TOKENS
+     These are set by BrandProvider via JS.
+     Fallback values are the "Classic" theme defaults.
      ============================================ */
 
-  /* Primary - Elektrik Turuncusu (Ana marka rengi) */
-  --color-brand-primary: #F27A1A;
-  --color-brand-primary-dark: #D4630E;
-  --color-brand-primary-light: #FFF3E8;
+  /* Primary - Main brand color */
+  --color-brand-primary: var(--color-primary, #F27A1A);
+  --color-brand-primary-dark: var(--color-primary-dark, #D4630E);
+  --color-brand-primary-light: var(--color-primary-light, #FFF3E8);
   --color-brand-primary-50: #FFF8F0;
   --color-brand-primary-100: #FFECD8;
   --color-brand-primary-200: #FFD5A8;
-  --color-brand-primary-500: #F27A1A;
-  --color-brand-primary-600: #D4630E;
+  --color-brand-primary-500: var(--color-primary, #F27A1A);
+  --color-brand-primary-600: var(--color-primary-dark, #D4630E);
   --color-brand-primary-700: #B3520A;
 
-  /* Secondary - Koyu Gece Laciverti */
-  --color-brand-secondary: #0F1B2D;
+  /* Secondary - Dark navy */
+  --color-brand-secondary: var(--color-secondary, #0F1B2D);
   --color-brand-secondary-dark: #080F1A;
-  --color-brand-secondary-light: #1B2D45;
+  --color-brand-secondary-light: var(--color-secondary-light, #1B2D45);
   --color-brand-secondary-50: #F0F3F7;
   --color-brand-secondary-100: #D6DEE8;
   --color-brand-secondary-200: #A8B8CC;
-  --color-brand-secondary-500: #0F1B2D;
+  --color-brand-secondary-500: var(--color-secondary, #0F1B2D);
   --color-brand-secondary-600: #0A1220;
   --color-brand-secondary-700: #060C15;
 
-  /* Accent - Neon Turuncu Vurgu */
-  --color-brand-accent: #FF8C38;
+  /* Accent - Highlight color */
+  --color-brand-accent: var(--color-accent, #FF8C38);
   --color-brand-accent-light: #FFB366;
   --color-brand-accent-dark: #E06A00;
 
-  /* Surface - Metalik Gri */
-  --color-brand-surface: #F4F5F7;
+  /* Surface - Background shades */
+  --color-brand-surface: var(--color-surface, #F4F5F7);
   --color-brand-surface-dark: #E8EAED;
   --color-brand-surface-darker: #C8CCD2;
 
   /* Text hierarchy */
-  --color-brand-text: #0F1B2D;
-  --color-brand-text-secondary: #4A5568;
-  --color-brand-text-muted: #8C95A6;
+  --color-brand-text: var(--color-text, #0F1B2D);
+  --color-brand-text-secondary: var(--color-text-secondary, #4A5568);
+  --color-brand-text-muted: var(--color-text-muted, #8C95A6);
   --color-brand-text-inverse: #FFFFFF;
 
   /* Status colors */
-  --color-brand-success: #10B981;
+  --color-brand-success: var(--color-success, #10B981);
   --color-brand-success-light: #ECFDF5;
-  --color-brand-warning: #F59E0B;
+  --color-brand-warning: var(--color-warning, #F59E0B);
   --color-brand-warning-light: #FFFBEB;
-  --color-brand-danger: #EF4444;
+  --color-brand-danger: var(--color-danger, #EF4444);
   --color-brand-danger-light: #FEF2F2;
-  --color-brand-info: #3B82F6;
+  --color-brand-info: var(--color-info, #3B82F6);
   --color-brand-info-light: #EFF6FF;
 
   /* Border */
-  --color-brand-border: #E2E5EA;
+  --color-brand-border: var(--color-border, #E2E5EA);
   --color-brand-border-light: #F0F1F3;
-
-  /* Legacy compatibility (will be removed) */
-  --color-market-orange: #F27A1A;
-  --color-market-orange-dark: #D4630E;
-  --color-market-orange-light: #FFF3E8;
-  --color-market-navy: #0F1B2D;
-  --color-market-navy-light: #1B2D45;
-  --color-market-gray: #F4F5F7;
-  --color-market-gray-dark: #E8EAED;
-  --color-market-green: #10B981;
-  --color-market-red: #EF4444;
 }
 
 :root {
@@ -129,11 +119,11 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.02 260);
 
-  /* Primary = Elektrik Turuncusu */
+  /* Primary = Brand Primary */
   --primary: oklch(0.688 0.189 57.5);
   --primary-foreground: oklch(1 0 0);
 
-  /* Secondary = Gece Laciverti */
+  /* Secondary = Brand Secondary */
   --secondary: oklch(0.22 0.03 260);
   --secondary-foreground: oklch(0.985 0 0);
 
@@ -153,7 +143,7 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
 
-  /* Sidebar = Gece Laciverti */
+  /* Sidebar = Brand Secondary */
   --sidebar: oklch(0.18 0.03 260);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.688 0.189 57.5);
@@ -233,8 +223,8 @@
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-card:hover {
-  box-shadow: 0 8px 30px rgba(15, 27, 45, 0.08),
-              0 2px 8px rgba(242, 122, 26, 0.06);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08),
+              0 2px 8px rgba(0, 0, 0, 0.04);
   transform: translateY(-4px);
 }
 
@@ -313,25 +303,18 @@
 }
 
 /* ============================================
-   STAR RATING
-   ============================================ */
-.star-rating {
-  color: #F27A1A;
-}
-
-/* ============================================
-   BRAND GRADIENTS
+   BRAND GRADIENTS (using CSS variables)
    ============================================ */
 .brand-gradient-primary {
-  background: linear-gradient(135deg, #0F1B2D 0%, #1B2D45 50%, #243B56 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-light) 50%, color-mix(in srgb, var(--color-secondary-light) 70%, white) 100%);
 }
 
 .brand-gradient-accent {
-  background: linear-gradient(135deg, #F27A1A 0%, #FF8C38 50%, #FFB366 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 50%, color-mix(in srgb, var(--color-accent) 70%, white) 100%);
 }
 
 .brand-gradient-hero {
-  background: linear-gradient(135deg, #0F1B2D 0%, #1B2D45 40%, #243B56 70%, #2D4F6B 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-light) 40%, color-mix(in srgb, var(--color-secondary-light) 60%, white) 100%);
 }
 
 /* ============================================
@@ -350,13 +333,20 @@
 }
 
 /* ============================================
-   BRAND TEXT
+   BRAND TEXT GRADIENT
    ============================================ */
 .brand-text-gradient {
-  background: linear-gradient(135deg, #F27A1A, #FF8C38);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ============================================
+   STAR RATING (using CSS variables)
+   ============================================ */
+.star-rating {
+  color: var(--color-primary, #F27A1A);
 }
 
 /* ============================================
@@ -381,4 +371,32 @@
 
 .pulse-dot {
   animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   PREMIUM FOCUS RING
+   ============================================ */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-primary);
+}
+
+/* ============================================
+   SMOOTH PAGE TRANSITIONS
+   ============================================ */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
 }

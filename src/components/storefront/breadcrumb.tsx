@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useBrand } from '@/lib/brand-context'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,10 +27,13 @@ interface StorefrontBreadcrumbProps {
  * - Last item is the current page (not a link)
  * - Includes BreadcrumbList JSON-LD structured data
  * - Always starts with "Ana Sayfa" (Home)
+ * - Uses dynamic brand theme colors
  *
  * Example: Ana Sayfa > Motolux > Yaris > Ön Fren Diski
  */
 export default function StorefrontBreadcrumb({ items }: StorefrontBreadcrumbProps) {
+  const { theme } = useBrand()
+
   // Build the full breadcrumb items including Home
   const allItems: BreadcrumbItemData[] = [
     { name: 'Ana Sayfa', href: '/' },
@@ -67,7 +71,7 @@ export default function StorefrontBreadcrumb({ items }: StorefrontBreadcrumbProp
         />
       )}
       <Breadcrumb className="mb-4">
-        <BreadcrumbList className="text-xs text-gray-500">
+        <BreadcrumbList className="text-xs text-[var(--color-text-muted)]">
           {allItems.map((item, index) => {
             const isLast = index === allItems.length - 1
 
@@ -75,13 +79,13 @@ export default function StorefrontBreadcrumb({ items }: StorefrontBreadcrumbProp
               <span key={index} className="contents">
                 <BreadcrumbItem>
                   {isLast ? (
-                    <BreadcrumbPage className="text-xs text-gray-700 font-medium">
+                    <BreadcrumbPage className="text-xs text-[var(--color-text)] font-medium">
                       {item.name}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink
                       asChild
-                      className="text-xs text-gray-500 hover:text-gray-800 transition-colors"
+                      className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
                     >
                       <Link href={item.href || '/'}>
                         {index === 0 ? (
@@ -97,7 +101,7 @@ export default function StorefrontBreadcrumb({ items }: StorefrontBreadcrumbProp
                   )}
                 </BreadcrumbItem>
                 {!isLast && (
-                  <BreadcrumbSeparator className="text-gray-400" />
+                  <BreadcrumbSeparator className="text-[var(--color-text-muted)]" />
                 )}
               </span>
             )

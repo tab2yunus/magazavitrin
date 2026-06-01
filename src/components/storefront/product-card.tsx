@@ -10,12 +10,14 @@ import { formatPrice, getDiscountPercent, proxyImageUrl } from '@/lib/storefront
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
+import { useBrand } from '@/lib/brand-context'
 
 interface ProductCardProps {
   product: Product & { avgRating?: number; reviewCount?: number }
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { theme } = useBrand()
   const { addItem } = useCartStore()
   const { toggleFavorite, isFavorite } = useFavoritesStore()
   const { toast } = useToast()
@@ -55,18 +57,18 @@ export default function ProductCard({ product }: ProductCardProps) {
       rel="noopener noreferrer"
       className="group block bg-white rounded-xl border overflow-hidden cursor-pointer relative"
       style={{
-        borderColor: '#E2E5EA',
+        borderColor: theme.colorBorder,
         transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
         transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
         boxShadow: isHovered
-          ? '0 12px 24px -6px rgba(242, 122, 26, 0.15), 0 4px 8px -2px rgba(15, 27, 45, 0.08)'
-          : '0 1px 3px 0 rgba(15, 27, 45, 0.04)',
+          ? `0 12px 24px -6px ${theme.colorPrimary}26, 0 4px 8px -2px ${theme.colorSecondary}14`
+          : `0 1px 3px 0 ${theme.colorSecondary}0A`,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* ── Image Area ── */}
-      <div className="relative aspect-square overflow-hidden" style={{ backgroundColor: '#F4F5F7' }}>
+      <div className="relative aspect-square overflow-hidden" style={{ backgroundColor: theme.colorSurface }}>
         {!imgError && imageUrl ? (
           <img
             src={imageUrl}
@@ -79,16 +81,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           /* ── Branded Placeholder ── */
           <div
             className="w-full h-full flex flex-col items-center justify-center gap-2 select-none"
-            style={{ backgroundColor: '#0F1B2D' }}
+            style={{ backgroundColor: theme.colorSecondary }}
           >
-            <Package className="h-8 w-8 mb-1" style={{ color: '#F27A1A' }} />
-            <span className="text-sm font-bold tracking-wider" style={{ color: '#F27A1A' }}>
-              İKİZ MOTOR
+            <Package className="h-8 w-8 mb-1" style={{ color: theme.colorPrimary }} />
+            <span className="text-sm font-bold tracking-wider" style={{ color: theme.colorPrimary }}>
+              {theme.brandShortName}
             </span>
-            <span className="text-[10px] font-medium tracking-wide" style={{ color: '#8C95A6' }}>
-              ORİJİNAL YEDEK PARÇA
+            <span className="text-[10px] font-medium tracking-wide" style={{ color: theme.colorTextMuted }}>
+              YEDEK PARÇA
             </span>
-            <span className="text-[9px] mt-auto mb-3 tracking-wide" style={{ color: '#4A5568' }}>
+            <span className="text-[9px] mt-auto mb-3 tracking-wide" style={{ color: theme.colorTextSecondary }}>
               GÖRSEL HAZIRLANIYOR
             </span>
           </div>
@@ -98,7 +100,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {hasDiscount && (
           <div
             className="absolute top-2.5 left-2.5 flex items-center justify-center px-2 py-0.5 rounded-md text-white text-xs font-bold z-10"
-            style={{ backgroundColor: '#EF4444' }}
+            style={{ backgroundColor: theme.colorDanger }}
           >
             %{discountPercent}
           </div>
@@ -109,7 +111,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div
             className="absolute top-2.5 flex items-center justify-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide z-10"
             style={{
-              backgroundColor: hasDiscount ? 'rgba(15, 185, 129, 0.9)' : 'rgba(15, 185, 129, 0.9)',
+              backgroundColor: `${theme.colorSuccess}E6`,
               color: '#ffffff',
               left: hasDiscount ? '3.5rem' : '0.625rem',
             }}
@@ -124,13 +126,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all duration-200 hover:scale-110"
           style={{
             background: isFavorite(product.id)
-              ? 'rgba(239, 68, 68, 0.15)'
+              ? `${theme.colorDanger}26`
               : 'rgba(255, 255, 255, 0.65)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
-            boxShadow: '0 2px 8px rgba(15, 27, 45, 0.08)',
+            boxShadow: `0 2px 8px ${theme.colorSecondary}14`,
             border: isFavorite(product.id)
-              ? '1px solid rgba(239, 68, 68, 0.3)'
+              ? `1px solid ${theme.colorDanger}4D`
               : '1px solid rgba(255, 255, 255, 0.4)',
           }}
           aria-label={isFavorite(product.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
@@ -138,8 +140,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Heart
             className="h-4 w-4 transition-all duration-200"
             style={{
-              fill: isFavorite(product.id) ? '#EF4444' : 'none',
-              color: isFavorite(product.id) ? '#EF4444' : '#4A5568',
+              fill: isFavorite(product.id) ? theme.colorDanger : 'none',
+              color: isFavorite(product.id) ? theme.colorDanger : theme.colorTextSecondary,
             }}
           />
         </button>
@@ -157,14 +159,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             onClick={handleAddToCart}
             className="w-full text-white font-semibold h-10 text-sm rounded-lg border-0 shadow-lg"
             style={{
-              backgroundColor: '#F27A1A',
-              boxShadow: '0 4px 14px rgba(242, 122, 26, 0.35)',
+              backgroundColor: theme.colorPrimary,
+              boxShadow: `0 4px 14px ${theme.colorPrimary}59`,
             }}
             onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#D4630E'
+              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = theme.colorPrimaryDark
             }}
             onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#F27A1A'
+              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = theme.colorPrimary
             }}
           >
             <ShoppingCart className="h-4 w-4 mr-1.5" />
@@ -179,7 +181,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.brand && (
           <p
             className="text-[11px] font-semibold uppercase tracking-wider mb-1 truncate"
-            style={{ color: '#8C95A6' }}
+            style={{ color: theme.colorTextMuted }}
           >
             {product.brand.name}
           </p>
@@ -189,7 +191,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3
           className="text-sm font-medium leading-5 line-clamp-2 mb-1.5"
           style={{
-            color: '#0F1B2D',
+            color: theme.colorText,
             minHeight: '2.5rem',
           }}
         >
@@ -205,13 +207,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                   key={star}
                   className="h-3.5 w-3.5"
                   style={{
-                    fill: star <= Math.round(rating) ? '#F27A1A' : 'transparent',
-                    color: star <= Math.round(rating) ? '#F27A1A' : '#E2E5EA',
+                    fill: star <= Math.round(rating) ? theme.colorPrimary : 'transparent',
+                    color: star <= Math.round(rating) ? theme.colorPrimary : theme.colorBorder,
                   }}
                 />
               ))}
             </div>
-            <span className="text-xs font-medium" style={{ color: '#8C95A6' }}>
+            <span className="text-xs font-medium" style={{ color: theme.colorTextMuted }}>
               ({reviewCount})
             </span>
           </div>
@@ -222,14 +224,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           {hasDiscount && (
             <span
               className="text-xs line-through mb-0.5"
-              style={{ color: '#8C95A6' }}
+              style={{ color: theme.colorTextMuted }}
             >
               {formatPrice(product.normalPrice)}
             </span>
           )}
           <span
             className="text-lg font-bold leading-tight"
-            style={{ color: hasDiscount ? '#F27A1A' : '#0F1B2D' }}
+            style={{ color: hasDiscount ? theme.colorPrimary : theme.colorText }}
           >
             {formatPrice(currentPrice)}
           </span>
@@ -241,13 +243,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span
               className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md"
               style={{
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                color: '#10B981',
+                backgroundColor: `${theme.colorSuccess}1A`,
+                color: theme.colorSuccess,
               }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full inline-block"
-                style={{ backgroundColor: '#10B981' }}
+                style={{ backgroundColor: theme.colorSuccess }}
               />
               Stokta
             </span>
@@ -255,13 +257,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span
               className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md"
               style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                color: '#EF4444',
+                backgroundColor: `${theme.colorDanger}1A`,
+                color: theme.colorDanger,
               }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full inline-block"
-                style={{ backgroundColor: '#EF4444' }}
+                style={{ backgroundColor: theme.colorDanger }}
               />
               Tükendi
             </span>
@@ -274,12 +276,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             href={`/magaza/${product.store.slug}`}
             onClick={(e) => e.stopPropagation()}
             className="text-[11px] truncate block transition-colors duration-200 hover:underline"
-            style={{ color: '#8C95A6' }}
+            style={{ color: theme.colorTextMuted }}
             onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.color = '#F27A1A'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = theme.colorPrimary
             }}
             onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.color = '#8C95A6'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = theme.colorTextMuted
             }}
           >
             {product.store.name}

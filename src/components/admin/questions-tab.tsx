@@ -166,7 +166,7 @@ export default function QuestionsTab() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setAnswerDialog(false)}>İptal</Button>
-            <Button onClick={handleAnswer} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+            <Button onClick={handleAnswer} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
               {saving ? 'Kaydediliyor...' : 'Cevapla'}
             </Button>
           </DialogFooter>

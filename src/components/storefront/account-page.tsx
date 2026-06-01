@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth-store'
+import { useBrand } from '@/lib/brand-context'
 import { User, Package, Heart, BarChart3, Settings, LogOut, Shield } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export default function AccountPage() {
   const router = useRouter()
   const { user, fetchUser, logout, isLoading } = useAuthStore()
+  const { theme } = useBrand()
 
   useEffect(() => {
     fetchUser()
@@ -56,15 +58,15 @@ export default function AccountPage() {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarFallback className="bg-[#F27A1A] text-white text-xl font-bold">
+              <AvatarFallback className="bg-[var(--color-primary)] text-white text-xl font-bold">
                 {user.name?.[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-[#0F1B2D]">{user.name}</h2>
+              <h2 className="text-xl font-bold text-[var(--color-text)]">{user.name}</h2>
               <p className="text-sm text-gray-500">{user.email}</p>
               <div className="mt-1">
-                <Badge variant="outline" className={user.role === 'super_admin' || user.role === 'editor' ? 'text-[#F27A1A] border-[#F27A1A]' : 'text-gray-500'}>
+                <Badge variant="outline" className={user.role === 'super_admin' || user.role === 'editor' ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-gray-500'}>
                   {user.role === 'super_admin' ? 'Yönetici' : user.role === 'editor' ? 'Editör' : 'Müşteri'}
                 </Badge>
               </div>
@@ -85,7 +87,7 @@ export default function AccountPage() {
                 <div className={`w-12 h-12 rounded-full ${link.color} flex items-center justify-center mx-auto mb-3`}>
                   <link.icon className="h-6 w-6" />
                 </div>
-                <p className="font-medium text-sm text-[#0F1B2D]">{link.label}</p>
+                <p className="font-medium text-sm text-[var(--color-text)]">{link.label}</p>
               </CardContent>
             </Card>
           </Link>
@@ -95,13 +97,13 @@ export default function AccountPage() {
       {/* Admin link */}
       {(user.role === 'super_admin' || user.role === 'editor') && (
         <Link href="/admin">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow mb-6 border-[#F27A1A]/30">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow mb-6" style={{ borderColor: theme.colorPrimary + '4D' }}>
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#FFF3E8] text-[#F27A1A] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center">
                 <Shield className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-[#0F1B2D]">Yönetim Paneli</p>
+                <p className="font-semibold text-[var(--color-text)]">Yönetim Paneli</p>
                 <p className="text-xs text-gray-500">Ürün, sipariş ve site yönetimi</p>
               </div>
             </CardContent>
@@ -112,7 +114,7 @@ export default function AccountPage() {
       {/* Account details */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="font-semibold text-[#0F1B2D] mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-[var(--color-text)] mb-4 flex items-center gap-2">
             <Settings className="h-5 w-5 text-gray-400" /> Hesap Bilgileri
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">

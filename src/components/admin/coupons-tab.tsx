@@ -114,7 +114,7 @@ export default function CouponsTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Kuponlar</h3>
-        <Button onClick={openNew} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+        <Button onClick={openNew} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           <Plus className="w-4 h-4 mr-2" /> Yeni Kupon
         </Button>
       </div>
@@ -137,7 +137,7 @@ export default function CouponsTab() {
               <TableBody>
                 {coupons.map(c => (
                   <TableRow key={c.id}>
-                    <TableCell className="font-mono font-bold text-[#F27A1A]">{c.code}</TableCell>
+                    <TableCell className="font-mono font-bold text-[var(--color-primary)]">{c.code}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{c.type === 'percentage' ? 'Yüzde (%)' : 'Sabit (₺)'}</Badge>
                     </TableCell>
@@ -194,7 +194,7 @@ export default function CouponsTab() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>İptal</Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">{saving ? 'Kaydediliyor...' : 'Kaydet'}</Button>
+            <Button onClick={handleSave} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">{saving ? 'Kaydediliyor...' : 'Kaydet'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

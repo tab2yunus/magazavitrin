@@ -98,7 +98,7 @@ export default function BrandsTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Markalar</h3>
-        <Button onClick={openNew} className="bg-[#F27A1A] hover:bg-[#e06d10]">
+        <Button onClick={openNew} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">
           <Plus className="w-4 h-4 mr-2" /> Yeni Marka
         </Button>
       </div>
@@ -165,7 +165,7 @@ export default function BrandsTab() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>İptal</Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-[#F27A1A] hover:bg-[#e06d10]">{saving ? 'Kaydediliyor...' : 'Kaydet'}</Button>
+            <Button onClick={handleSave} disabled={saving} className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)]">{saving ? 'Kaydediliyor...' : 'Kaydet'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
