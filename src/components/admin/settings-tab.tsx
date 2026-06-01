@@ -913,7 +913,7 @@ export default function SettingsTab() {
                       {edited.titleTemplate && (
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Başlık:</p>
-                          <p className="text-sm font-medium text-[#1A2744]">{renderTemplatePreview(edited.titleTemplate, pageType)}</p>
+                          <p className="text-sm font-medium text-[#0F1B2D]">{renderTemplatePreview(edited.titleTemplate, pageType)}</p>
                         </div>
                       )}
                       {edited.descriptionTemplate && (
@@ -1188,7 +1188,7 @@ export default function SettingsTab() {
           <CardContent>
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center">
               <Construction className="w-16 h-16 text-[#F27A1A] mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-[#1A2744] mb-2">
+              <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">
                 {getValue('maintenance_title') || 'Yakında Geri Döneceğiz'}
               </h2>
               <p className="text-gray-600 max-w-md mx-auto mb-4">
@@ -1340,7 +1340,7 @@ export default function SettingsTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[#1A2744]">Site Ayarları</h3>
+          <h3 className="text-lg font-semibold text-[#0F1B2D]">Site Ayarları</h3>
           <p className="text-sm text-gray-500">Sitenizin tüm ayarlarını bu panelden yönetin</p>
         </div>
         {settings.length === 0 && (
@@ -1361,7 +1361,7 @@ export default function SettingsTab() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="text-xs px-3 py-2 data-[state=active]:bg-[#1A2744] data-[state=active]:text-white"
+                  className="text-xs px-3 py-2 data-[state=active]:bg-[#0F1B2D] data-[state=active]:text-white"
                 >
                   <Icon className="w-3.5 h-3.5 mr-1.5" />
                   <span className="hidden sm:inline">{tab.label}</span>

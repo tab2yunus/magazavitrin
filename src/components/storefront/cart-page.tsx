@@ -72,7 +72,7 @@ export default function CartPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-[#1A2744] mb-2">Sepetiniz Boş</h2>
+        <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">Sepetiniz Boş</h2>
         <p className="text-gray-500 mb-6">Hemen alışverişe başlayın!</p>
         <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
           Alışverişe Başla
@@ -83,7 +83,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#1A2744] mb-6">Sepetim ({items.length} ürün)</h1>
+      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">Sepetim ({items.length} ürün)</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart items */}
@@ -101,7 +101,7 @@ export default function CartPage() {
                     {/* Image */}
                     <Link
                       href={`/urun/${product.slug}`}
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 bg-[#F5F5F5]"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden shrink-0 bg-[#F4F5F7]"
                     >
                       <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" />
                     </Link>
@@ -110,7 +110,7 @@ export default function CartPage() {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/urun/${product.slug}`}
-                        className="text-sm font-medium text-[#1A2744] hover:text-[#F27A1A] line-clamp-2 text-left"
+                        className="text-sm font-medium text-[#0F1B2D] hover:text-[#F27A1A] line-clamp-2 text-left"
                       >
                         {product.name}
                       </Link>
@@ -160,7 +160,7 @@ export default function CartPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-gray-400 hover:text-[#E74C3C]"
+                            className="h-8 w-8 text-gray-400 hover:text-[#EF4444]"
                             onClick={() => handleRemoveItem(item.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -234,7 +234,7 @@ export default function CartPage() {
               </div>
 
               {shipping === 0 && (
-                <p className="text-xs text-[#3CB371] text-center">🎉 Ücretsiz kargo!</p>
+                <p className="text-xs text-[#10B981] text-center">🎉 Ücretsiz kargo!</p>
               )}
               {shipping > 0 && subtotal < 200 && (
                 <p className="text-xs text-gray-400 text-center">

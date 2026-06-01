@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Heart, ShoppingCart, Star } from 'lucide-react'
+import { Heart, ShoppingCart, Star, Package } from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore } from '@/stores/favorites-store'
 import type { Product } from '@/types'
@@ -22,14 +22,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
 
-  const hasDiscount = product.discountPrice && product.discountPrice < product.normalPrice
+  const hasDiscount = product.discountPrice != null && product.discountPrice < product.normalPrice
   const discountPercent = hasDiscount ? getDiscountPercent(product.normalPrice, product.discountPrice!) : 0
   const currentPrice = product.discountPrice || product.normalPrice
-  const imageUrl = proxyImageUrl(product.images?.[0]?.url || `https://placehold.co/300x300/F5F5F5/999?text=${encodeURIComponent(product.name.slice(0, 12))}`)
-  const rating = (product as any).avgRating || 0
-  const reviewCount = (product as any).reviewCount || 0
+  const imageUrl = proxyImageUrl(product.images?.[0]?.url || '')
+  const rating = (product as Product & { avgRating?: number; reviewCount?: number }).avgRating || 0
+  const reviewCount = (product as Product & { avgRating?: number; reviewCount?: number }).reviewCount || 0
+  const inStock = product.stock > 0
+  const hasOemCode = !!product.sku
 
-  async function handleAddToCart(e: React.MouseEvent) {
+  const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
     try {
@@ -38,64 +40,132 @@ export default function ProductCard({ product }: ProductCardProps) {
     } catch {
       toast({ title: 'Hata', description: 'Sepete eklenemedi', variant: 'destructive' })
     }
-  }
+  }, [addItem, product.id, product.name, toast])
 
-  async function handleToggleFavorite(e: React.MouseEvent) {
+  const handleToggleFavorite = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
     await toggleFavorite(product.id)
-  }
+  }, [toggleFavorite, product.id])
 
   return (
     <Link
       href={`/urun/${product.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="product-card group bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer relative block"
+      className="group block bg-white rounded-xl border overflow-hidden cursor-pointer relative"
+      style={{
+        borderColor: '#E2E5EA',
+        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: isHovered
+          ? '0 12px 24px -6px rgba(242, 122, 26, 0.15), 0 4px 8px -2px rgba(15, 27, 45, 0.08)'
+          : '0 1px 3px 0 rgba(15, 27, 45, 0.04)',
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image area */}
-      <div className="relative aspect-square bg-[#F5F5F5] overflow-hidden">
-        {!imgError ? (
+      {/* ── Image Area ── */}
+      <div className="relative aspect-square overflow-hidden" style={{ backgroundColor: '#F4F5F7' }}>
+        {!imgError && imageUrl ? (
           <img
             src={imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             onError={() => setImgError(true)}
+            loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            <ShoppingCart className="h-10 w-10" />
+          /* ── Branded Placeholder ── */
+          <div
+            className="w-full h-full flex flex-col items-center justify-center gap-2 select-none"
+            style={{ backgroundColor: '#0F1B2D' }}
+          >
+            <Package className="h-8 w-8 mb-1" style={{ color: '#F27A1A' }} />
+            <span className="text-sm font-bold tracking-wider" style={{ color: '#F27A1A' }}>
+              İKİZ MOTOR
+            </span>
+            <span className="text-[10px] font-medium tracking-wide" style={{ color: '#8C95A6' }}>
+              ORİJİNAL YEDEK PARÇA
+            </span>
+            <span className="text-[9px] mt-auto mb-3 tracking-wide" style={{ color: '#4A5568' }}>
+              GÖRSEL HAZIRLANIYOR
+            </span>
           </div>
         )}
 
-        {/* Discount badge */}
+        {/* ── Discount Badge ── */}
         {hasDiscount && (
-          <Badge className="absolute top-2 left-2 bg-[#E74C3C] text-white text-xs font-bold px-2 py-0.5 border-0">
+          <div
+            className="absolute top-2.5 left-2.5 flex items-center justify-center px-2 py-0.5 rounded-md text-white text-xs font-bold z-10"
+            style={{ backgroundColor: '#EF4444' }}
+          >
             %{discountPercent}
-          </Badge>
+          </div>
         )}
 
-        {/* Favorite button */}
+        {/* ── OEM / ORİJİNAL Badge ── */}
+        {hasOemCode && (
+          <div
+            className="absolute top-2.5 flex items-center justify-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide z-10"
+            style={{
+              backgroundColor: hasDiscount ? 'rgba(15, 185, 129, 0.9)' : 'rgba(15, 185, 129, 0.9)',
+              color: '#ffffff',
+              left: hasDiscount ? '3.5rem' : '0.625rem',
+            }}
+          >
+            OEM
+          </div>
+        )}
+
+        {/* ── Favorite Button (Glass Morphism) ── */}
         <button
           onClick={handleToggleFavorite}
-          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow-sm flex items-center justify-center transition-colors"
+          className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center z-10 transition-all duration-200 hover:scale-110"
+          style={{
+            background: isFavorite(product.id)
+              ? 'rgba(239, 68, 68, 0.15)'
+              : 'rgba(255, 255, 255, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            boxShadow: '0 2px 8px rgba(15, 27, 45, 0.08)',
+            border: isFavorite(product.id)
+              ? '1px solid rgba(239, 68, 68, 0.3)'
+              : '1px solid rgba(255, 255, 255, 0.4)',
+          }}
+          aria-label={isFavorite(product.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
         >
           <Heart
-            className={`h-4 w-4 ${isFavorite(product.id) ? 'fill-[#E74C3C] text-[#E74C3C]' : 'text-gray-400'}`}
+            className="h-4 w-4 transition-all duration-200"
+            style={{
+              fill: isFavorite(product.id) ? '#EF4444' : 'none',
+              color: isFavorite(product.id) ? '#EF4444' : '#4A5568',
+            }}
           />
         </button>
 
-        {/* Add to cart button - shows on hover */}
+        {/* ── Sepete Ekle Slide-Up Button ── */}
         <div
-          className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 ${
-            isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-          }`}
+          className="absolute bottom-0 left-0 right-0 px-3 pb-3 z-10"
+          style={{
+            transform: isHovered ? 'translateY(0)' : 'translateY(100%)',
+            opacity: isHovered ? 1 : 0,
+            transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease-out',
+          }}
         >
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-[#F27A1A] hover:bg-[#D4630E] text-white font-semibold h-9 text-sm"
+            className="w-full text-white font-semibold h-10 text-sm rounded-lg border-0 shadow-lg"
+            style={{
+              backgroundColor: '#F27A1A',
+              boxShadow: '0 4px 14px rgba(242, 122, 26, 0.35)',
+            }}
+            onMouseEnter={(e) => {
+              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#D4630E'
+            }}
+            onMouseLeave={(e) => {
+              ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#F27A1A'
+            }}
           >
             <ShoppingCart className="h-4 w-4 mr-1.5" />
             Sepete Ekle
@@ -103,53 +173,114 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Product info */}
-      <div className="p-3">
-        {/* Brand */}
+      {/* ── Info Area ── */}
+      <div className="p-4">
+        {/* Brand Name */}
         {product.brand && (
-          <p className="text-xs text-gray-500 mb-0.5 truncate">{product.brand.name}</p>
+          <p
+            className="text-[11px] font-semibold uppercase tracking-wider mb-1 truncate"
+            style={{ color: '#8C95A6' }}
+          >
+            {product.brand.name}
+          </p>
         )}
 
-        {/* Name */}
-        <h3 className="text-sm font-medium text-gray-800 line-clamp-2 min-h-[2.5rem] leading-5 mb-1">
+        {/* Product Name */}
+        <h3
+          className="text-sm font-medium leading-5 line-clamp-2 mb-1.5"
+          style={{
+            color: '#0F1B2D',
+            minHeight: '2.5rem',
+          }}
+        >
           {product.name}
         </h3>
 
-        {/* Rating */}
+        {/* Rating Stars */}
         {rating > 0 && (
-          <div className="flex items-center gap-1 mb-1.5">
-            <div className="flex items-center">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-0.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`h-3 w-3 ${
-                    star <= Math.round(rating) ? 'fill-[#F27A1A] text-[#F27A1A]' : 'text-gray-300'
-                  }`}
+                  className="h-3.5 w-3.5"
+                  style={{
+                    fill: star <= Math.round(rating) ? '#F27A1A' : 'transparent',
+                    color: star <= Math.round(rating) ? '#F27A1A' : '#E2E5EA',
+                  }}
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-500">({reviewCount})</span>
+            <span className="text-xs font-medium" style={{ color: '#8C95A6' }}>
+              ({reviewCount})
+            </span>
           </div>
         )}
 
-        {/* Price */}
-        <div className="flex flex-col">
+        {/* Price Section */}
+        <div className="flex flex-col mb-2">
           {hasDiscount && (
-            <span className="text-xs text-gray-400 line-through">
+            <span
+              className="text-xs line-through mb-0.5"
+              style={{ color: '#8C95A6' }}
+            >
               {formatPrice(product.normalPrice)}
             </span>
           )}
-          <span className={`text-lg font-bold ${hasDiscount ? 'text-[#F27A1A]' : 'text-[#1A2744]'}`}>
+          <span
+            className="text-lg font-bold leading-tight"
+            style={{ color: hasDiscount ? '#F27A1A' : '#0F1B2D' }}
+          >
             {formatPrice(currentPrice)}
           </span>
         </div>
 
-        {/* Store */}
+        {/* Stock Status Badge */}
+        <div className="mb-2">
+          {inStock ? (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md"
+              style={{
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                color: '#10B981',
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full inline-block"
+                style={{ backgroundColor: '#10B981' }}
+              />
+              Stokta
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                color: '#EF4444',
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full inline-block"
+                style={{ backgroundColor: '#EF4444' }}
+              />
+              Tükendi
+            </span>
+          )}
+        </div>
+
+        {/* Store Name */}
         {product.store && (
           <Link
             href={`/magaza/${product.store.slug}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-xs text-gray-500 hover:text-[#F27A1A] mt-1 truncate block transition-colors"
+            className="text-[11px] truncate block transition-colors duration-200 hover:underline"
+            style={{ color: '#8C95A6' }}
+            onMouseEnter={(e) => {
+              ;(e.currentTarget as HTMLAnchorElement).style.color = '#F27A1A'
+            }}
+            onMouseLeave={(e) => {
+              ;(e.currentTarget as HTMLAnchorElement).style.color = '#8C95A6'
+            }}
           >
             {product.store.name}
           </Link>

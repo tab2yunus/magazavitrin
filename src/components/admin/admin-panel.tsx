@@ -63,7 +63,7 @@ const menuItems = [
 
 function SidebarContent({ activeTab, setActiveTab, onBack, onMobileClose }: { activeTab: string; setActiveTab: (id: string) => void; onBack: () => void; onMobileClose?: () => void }) {
   return (
-    <div className="flex flex-col h-full bg-[#1A2744]">
+    <div className="flex flex-col h-full bg-[#0F1B2D]">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
         <div className="w-9 h-9 rounded-lg bg-[#F27A1A] flex items-center justify-center">
@@ -151,7 +151,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
   const currentMenu = menuItems.find(m => m.id === activeTab)
 
   return (
-    <div className="flex h-screen bg-[#F5F5F5] overflow-hidden">
+    <div className="flex h-screen bg-[#F4F5F7] overflow-hidden">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 flex-shrink-0">
         <SidebarContent
@@ -200,7 +200,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-              <div className="w-8 h-8 rounded-full bg-[#1A2744] flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#0F1B2D] flex items-center justify-center text-white text-xs font-bold">
                 A
               </div>
               <span className="font-medium">Admin</span>

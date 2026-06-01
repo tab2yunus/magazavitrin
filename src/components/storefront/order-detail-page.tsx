@@ -50,7 +50,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#1A2744]">Sipariş bulunamadı</h2>
+        <h2 className="text-2xl font-bold text-[#0F1B2D]">Sipariş bulunamadı</h2>
         <Button onClick={() => router.push('/siparislerim')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Siparişlerime Dön
         </Button>
@@ -66,7 +66,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-[#1A2744]">Sipariş #{order.orderNumber}</h1>
+          <h1 className="text-xl font-bold text-[#0F1B2D]">Sipariş #{order.orderNumber}</h1>
           <p className="text-sm text-gray-500">
             {new Date(order.createdAt).toLocaleDateString('tr-TR', {
               day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -85,7 +85,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
                   <Package className="h-5 w-5 text-[#F27A1A]" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#1A2744]">Sipariş Durumu</p>
+                  <p className="font-semibold text-[#0F1B2D]">Sipariş Durumu</p>
                   <Badge className={`${getStatusColor(order.status)} border-0 mt-1`}>
                     {getStatusText(order.status)}
                   </Badge>
@@ -95,7 +95,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Takip No</p>
                   <p className="text-sm font-medium flex items-center gap-1">
-                    <Truck className="h-4 w-4 text-[#3CB371]" /> {order.trackingNumber}
+                    <Truck className="h-4 w-4 text-[#10B981]" /> {order.trackingNumber}
                   </p>
                 </div>
               )}
@@ -121,7 +121,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1A2744] truncate">{item.productName}</p>
+                  <p className="text-sm font-medium text-[#0F1B2D] truncate">{item.productName}</p>
                   <p className="text-xs text-gray-500">{item.quantity} adet</p>
                 </div>
                 <p className="text-sm font-semibold shrink-0">{formatPrice(item.totalPrice)}</p>
@@ -134,7 +134,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-5">
-              <h3 className="font-semibold text-sm text-[#1A2744] flex items-center gap-2 mb-3">
+              <h3 className="font-semibold text-sm text-[#0F1B2D] flex items-center gap-2 mb-3">
                 <MapPin className="h-4 w-4 text-[#F27A1A]" /> Teslimat Adresi
               </h3>
               <p className="text-sm text-gray-600">{order.shippingAddress || 'Belirtilmemiş'}</p>
@@ -142,7 +142,7 @@ export default function OrderDetailPage({ id }: OrderDetailPageProps) {
           </Card>
           <Card>
             <CardContent className="p-5">
-              <h3 className="font-semibold text-sm text-[#1A2744] flex items-center gap-2 mb-3">
+              <h3 className="font-semibold text-sm text-[#0F1B2D] flex items-center gap-2 mb-3">
                 <CreditCard className="h-4 w-4 text-[#F27A1A]" /> Ödeme
               </h3>
               <p className="text-sm text-gray-600">{getPaymentMethodText(order.paymentMethod)}</p>

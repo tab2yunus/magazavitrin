@@ -84,7 +84,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#1A2744] mb-2">Sepetiniz Boş</h2>
+        <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">Sepetiniz Boş</h2>
         <p className="text-gray-500 mb-6">Önce sepetinize ürün eklemeniz gerekiyor.</p>
         <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
           Alışverişe Başla
@@ -95,7 +95,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#1A2744] mb-6">Sipariş Oluştur</h1>
+      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">Sipariş Oluştur</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="cod" id="cod" />
                     <Label htmlFor="cod" className="flex-1 cursor-pointer flex items-center gap-2">
-                      <Banknote className="h-5 w-5 text-[#3CB371]" />
+                      <Banknote className="h-5 w-5 text-[#10B981]" />
                       <div>
                         <p className="font-medium">Kapıda Ödeme</p>
                         <p className="text-xs text-gray-500">Ürün tesliminde nakit ödeme</p>

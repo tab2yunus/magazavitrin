@@ -64,7 +64,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
   if (!brand) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#1A2744]">Marka bulunamadı</h2>
+        <h2 className="text-2xl font-bold text-[#0F1B2D]">Marka bulunamadı</h2>
         <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Ana Sayfaya Dön
         </Button>
@@ -83,7 +83,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
 
       {/* Brand header */}
       <div className="bg-white border rounded-xl p-6 mb-6 flex items-center gap-6">
-        <div className="w-20 h-20 rounded-xl bg-[#F5F5F5] flex items-center justify-center shrink-0">
+        <div className="w-20 h-20 rounded-xl bg-[#F4F5F7] flex items-center justify-center shrink-0">
           {brand.logo ? (
             <img src={brand.logo} alt={brand.name} className="w-full h-full object-cover rounded-xl" />
           ) : (
@@ -91,7 +91,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
           )}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A2744]">{brand.name}</h1>
+          <h1 className="text-2xl font-bold text-[#0F1B2D]">{brand.name}</h1>
           {brand.description && <p className="text-sm text-gray-500 mt-1">{brand.description}</p>}
           <p className="text-sm text-gray-400 mt-1">{products.length} ürün</p>
         </div>
@@ -100,7 +100,7 @@ export default function BrandPage({ slug }: BrandPageProps) {
       {/* Sort */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-500">
-          <span className="font-semibold text-[#1A2744]">{products.length}</span> ürün
+          <span className="font-semibold text-[#0F1B2D]">{products.length}</span> ürün
         </p>
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger className="w-40">

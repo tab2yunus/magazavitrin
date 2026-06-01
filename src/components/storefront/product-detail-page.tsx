@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ShoppingCart, Heart, BarChart3, Star, Truck, Shield, RotateCcw, ChevronRight, Minus, Plus, Store } from 'lucide-react'
+import {
+  ShoppingCart, Heart, BarChart3, Star, Truck, Shield, RotateCcw,
+  ChevronRight, Minus, Plus, Store, Package, MessageCircle,
+  Check, X, ZoomIn, Share2
+} from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
 import { useFavoritesStore, useComparisonStore } from '@/stores/favorites-store'
 import type { Product, ProductVariation, Review } from '@/types'
@@ -32,6 +36,8 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({})
+  const [zoomed, setZoomed] = useState(false)
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 })
 
   const loadProduct = useCallback(async () => {
     setLoading(true)
@@ -42,13 +48,11 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
       if (res.ok) {
         const data = await res.json()
         setProduct(data)
-        // Initialize first in-stock variation per group
         if (data.variations) {
           const initVars: Record<string, string> = {}
           data.variations.forEach((v: ProductVariation) => {
             if (!initVars[v.name] && v.stock > 0) initVars[v.name] = v.value
           })
-          // Fallback: if all variations of a group are out of stock, pick the first one
           data.variations.forEach((v: ProductVariation) => {
             if (!initVars[v.name]) initVars[v.name] = v.value
           })
@@ -66,13 +70,21 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Skeleton className="aspect-square rounded-xl" />
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-5">
+            <Skeleton className="aspect-square rounded-2xl" />
+            <div className="flex gap-2 mt-3">
+              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="w-16 h-16 rounded-lg" />)}
+            </div>
+          </div>
+          <div className="lg:col-span-4 space-y-4">
+            <Skeleton className="h-5 w-24" />
             <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
             <Skeleton className="h-10 w-1/3" />
-            <Skeleton className="h-12 w-full" />
+          </div>
+          <div className="lg:col-span-3">
+            <Skeleton className="h-64 rounded-2xl" />
           </div>
         </div>
       </div>
@@ -81,9 +93,11 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
   if (!product) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#1A2744]">Ürün bulunamadı</h2>
-        <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <Package className="w-20 h-20 mx-auto text-[#8C95A6] mb-4" />
+        <h2 className="text-2xl font-bold text-[#0F1B2D] mb-2">Ürün bulunamadı</h2>
+        <p className="text-[#4A5568] mb-6">Aradığınız ürün kaldırılmış veya geçici olarak mevcut olmayabilir.</p>
+        <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E] text-white">
           Ana Sayfaya Dön
         </Button>
       </div>
@@ -98,14 +112,12 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const storeProducts = product.storeProducts || []
   const avgRating = product.avgRating || 0
 
-  // Group variations by name
   const variationGroups: Record<string, ProductVariation[]> = {}
   variations.forEach((v: ProductVariation) => {
     if (!variationGroups[v.name]) variationGroups[v.name] = []
     variationGroups[v.name].push(v)
   })
 
-  // Find the currently selected variation (for price/stock override)
   const selectedVariation = Object.keys(variationGroups).length === 1
     ? variations.find((v: ProductVariation) => {
         const [name, value] = Object.entries(selectedVariations)[0]
@@ -122,20 +134,23 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     ? getDiscountPercent(product.normalPrice, currentPrice)
     : 0
 
+  function handleImageZoom(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    setZoomPos({ x, y })
+  }
+
   async function handleAddToCart() {
-    // Find matching variation IDs per group
     let variationId: string | undefined
     if (Object.keys(selectedVariations).length > 0) {
       if (Object.keys(variationGroups).length === 1) {
-        // Single variation group: find the exact matching variation
         const match = variations.find((v: ProductVariation) => {
           const [name, value] = Object.entries(selectedVariations)[0]
           return v.name === name && v.value === value
         })
         variationId = match?.id
       }
-      // For multi-variation products, send selectedVariations to let
-      // the backend resolve the correct combination
     }
     try {
       await addItem(product.id, quantity, variationId, selectedVariations)
@@ -145,54 +160,78 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     }
   }
 
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        url: window.location.href,
+      })
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+      toast({ title: 'Link kopyalandı' })
+    }
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-4 animate-fade-in-up">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4 overflow-x-auto">
-        <Link href="/" className="hover:text-[#F27A1A]">Ana Sayfa</Link>
+      <nav className="flex items-center gap-1.5 text-sm text-[#8C95A6] mb-6 overflow-x-auto">
+        <Link href="/" className="hover:text-[#F27A1A] transition-colors">Ana Sayfa</Link>
         {product.category && (
           <>
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-            <Link href={`/kategori/${product.category.slug}`} className="hover:text-[#F27A1A]">
-              {product.category.parent?.name && `${product.category.parent.name} > `}
+            <Link href={`/kategori/${product.category.slug}`} className="hover:text-[#F27A1A] transition-colors">
+              {product.category.parent?.name && `${product.category.parent.name} / `}
               {product.category.name}
             </Link>
           </>
         )}
         <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-        <span className="text-gray-800 font-medium truncate">{product.name}</span>
+        <span className="text-[#0F1B2D] font-medium truncate">{product.name}</span>
       </nav>
 
-      {/* Product main section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-        {/* Left: Image Gallery */}
-        <div className="space-y-3">
-          <div className="aspect-square rounded-xl overflow-hidden bg-[#F5F5F5] relative">
+      {/* Product main section - 3 column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        {/* LEFT: Image Gallery (5 cols) */}
+        <div className="lg:col-span-5 space-y-3">
+          <div
+            className="aspect-square rounded-2xl overflow-hidden bg-[#F4F5F7] relative cursor-zoom-in group"
+            onMouseMove={handleImageZoom}
+            onClick={() => setZoomed(!zoomed)}
+          >
             {images[selectedImage] ? (
               <img
                 src={proxyImageUrl(images[selectedImage].url)}
                 alt={images[selectedImage].alt || product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300"
+                style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`, transform: 'scale(2)' } : {}}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <ShoppingCart className="h-16 w-16" />
+              <div className="w-full h-full flex flex-col items-center justify-center bg-[#0F1B2D] text-white">
+                <Package className="h-16 w-16 text-[#F27A1A] mb-3" />
+                <p className="font-bold text-lg">İKİZ MOTOR</p>
+                <p className="text-sm text-white/60">Görsel Hazırlanıyor</p>
               </div>
             )}
             {effectiveHasDiscount && (
-              <Badge className="absolute top-4 left-4 bg-[#E74C3C] text-white text-base font-bold px-3 py-1 border-0">
+              <Badge className="absolute top-4 left-4 bg-[#EF4444] text-white text-sm font-bold px-3 py-1 border-0 rounded-lg">
                 %{effectiveDiscountPercent} İndirim
               </Badge>
             )}
+            {/* Zoom hint */}
+            <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-xs text-[#4A5568] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ZoomIn className="h-3.5 w-3.5" />
+              Büyüt
+            </div>
           </div>
           {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
               {images.map((img: any, i: number) => (
                 <button
                   key={img.id || i}
                   onClick={() => setSelectedImage(i)}
-                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${
-                    i === selectedImage ? 'border-[#F27A1A]' : 'border-gray-200'
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all duration-200 ${
+                    i === selectedImage ? 'border-[#F27A1A] shadow-md shadow-[#F27A1A]/20' : 'border-[#E2E5EA] hover:border-[#F27A1A]/50'
                   }`}
                 >
                   <img src={proxyImageUrl(img.url)} alt={img.alt || ''} className="w-full h-full object-cover" />
@@ -202,32 +241,46 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           )}
         </div>
 
-        {/* Right: Product info */}
-        <div className="space-y-4">
+        {/* MIDDLE: Product Info (4 cols) */}
+        <div className="lg:col-span-4 space-y-4">
           {/* Brand */}
           {product.brand && (
             <Link
               href={`/marka/${product.brand.slug}`}
-              className="text-sm text-[#F27A1A] font-semibold hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm text-[#F27A1A] font-semibold hover:underline uppercase tracking-wide"
             >
               {product.brand.name}
             </Link>
           )}
 
           {/* Name */}
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1A2744]">{product.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F1B2D] leading-tight">{product.name}</h1>
+
+          {/* SKU / OEM */}
+          {(product.sku || product.oemCode) && (
+            <div className="flex items-center gap-3 text-sm">
+              {product.sku && (
+                <span className="text-[#8C95A6]">SKU: <span className="text-[#4A5568] font-mono">{product.sku}</span></span>
+              )}
+              {product.oemCode && (
+                <Badge className="bg-[#FFF3E8] text-[#F27A1A] border-0 text-xs font-semibold">
+                  OEM: {product.oemCode}
+                </Badge>
+              )}
+            </div>
+          )}
 
           {/* Store info */}
           {product.store && (
             <div className="flex items-center gap-2">
               <Link
                 href={`/magaza/${product.store.slug}`}
-                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                className="text-sm text-[#4A5568] hover:text-[#F27A1A] flex items-center gap-1.5 transition-colors"
               >
                 <Store className="h-4 w-4" />
                 {product.store.name}
               </Link>
-              <span className="text-sm text-gray-400">· {product.store.rating} ★</span>
+              <span className="text-sm text-[#F27A1A]">★ {product.store.rating}</span>
             </div>
           )}
 
@@ -237,48 +290,26 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`h-5 w-5 ${star <= Math.round(avgRating) ? 'fill-[#F27A1A] text-[#F27A1A]' : 'text-gray-300'}`}
+                  className={`h-5 w-5 ${star <= Math.round(avgRating) ? 'fill-[#F27A1A] text-[#F27A1A]' : 'text-[#E2E5EA]'}`}
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-500">({reviews.length} değerlendirme)</span>
+            <span className="text-sm text-[#4A5568]">({reviews.length} değerlendirme)</span>
           </div>
 
-          <Separator />
+          <Separator className="bg-[#E2E5EA]" />
 
-          {/* Price */}
-          <div className="space-y-1">
-            {effectiveHasDiscount && (
-              <div className="flex items-center gap-2">
-                <Badge className="bg-[#E74C3C] text-white border-0 text-sm">%{effectiveDiscountPercent}</Badge>
-                <span className="text-lg text-gray-400 line-through">{formatPrice(product.normalPrice)}</span>
-              </div>
-            )}
-            <span className="text-3xl font-bold text-[#F27A1A]">{formatPrice(currentPrice)}</span>
-          </div>
-
-          {/* Stock status */}
-          <div className="flex items-center gap-2">
-            {effectiveStock > 0 ? (
-              <>
-                <Badge variant="outline" className="text-[#3CB371] border-[#3CB371] bg-green-50">
-                  <Shield className="h-3 w-3 mr-1" /> Stokta {effectiveStock} adet
-                </Badge>
-                {product.shippingTime && (
-                  <Badge variant="outline" className="text-blue-600 border-blue-300 bg-blue-50">
-                    <Truck className="h-3 w-3 mr-1" /> {product.shippingTime}
-                  </Badge>
-                )}
-              </>
-            ) : (
-              <Badge variant="outline" className="text-[#E74C3C] border-[#E74C3C]">Stokta yok</Badge>
-            )}
-          </div>
+          {/* Short Description */}
+          {product.shortDescription && (
+            <p className="text-sm text-[#4A5568] leading-relaxed">{product.shortDescription}</p>
+          )}
 
           {/* Variations */}
           {Object.entries(variationGroups).map(([name, options]) => (
             <div key={name}>
-              <p className="text-sm font-semibold text-[#1A2744] mb-2">{name}: <span className="font-normal text-gray-600">{selectedVariations[name]}</span></p>
+              <p className="text-sm font-semibold text-[#0F1B2D] mb-2">
+                {name}: <span className="font-normal text-[#4A5568]">{selectedVariations[name]}</span>
+              </p>
               <div className="flex flex-wrap gap-2">
                 {options.map((opt: ProductVariation) => (
                   <Button
@@ -287,7 +318,10 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
                     size="sm"
                     disabled={opt.stock <= 0}
                     onClick={() => setSelectedVariations({ ...selectedVariations, [name]: opt.value })}
-                    className={selectedVariations[name] === opt.value ? 'bg-[#F27A1A] hover:bg-[#D4630E] text-white' : ''}
+                    className={selectedVariations[name] === opt.value
+                      ? 'bg-[#F27A1A] hover:bg-[#D4630E] text-white border-[#F27A1A]'
+                      : 'border-[#E2E5EA] text-[#4A5568] hover:border-[#F27A1A] hover:text-[#F27A1A]'
+                    }
                   >
                     {opt.value}
                     {opt.stock <= 0 && ' (Tükendi)'}
@@ -297,73 +331,136 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
             </div>
           ))}
 
-          {/* Quantity selector */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-[#1A2744]">Adet:</span>
-            <div className="flex items-center border rounded-lg">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="w-10 text-center font-medium">{quantity}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => setQuantity(Math.min(effectiveStock, quantity + 1))}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+          {/* Uyumluluk Bilgisi */}
+          <div className="bg-[#F4F5F7] rounded-xl p-4">
+            <p className="text-sm font-semibold text-[#0F1B2D] mb-2">Uyumluluk Bilgisi</p>
+            <p className="text-xs text-[#8C95A6]">Bu parçanın uyumlu olduğu modeller için teknik özellikler sekmesini inceleyin.</p>
           </div>
+        </div>
 
-          {/* Action buttons */}
-          <div className="space-y-3 pt-2">
-            <Button
-              onClick={handleAddToCart}
-              disabled={effectiveStock <= 0}
-              className="w-full h-12 text-base font-bold bg-[#F27A1A] hover:bg-[#D4630E] text-white"
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Sepete Ekle
-            </Button>
-            <div className="flex gap-3">
+        {/* RIGHT: Price Box (3 cols) */}
+        <div className="lg:col-span-3">
+          <div className="sticky top-28 border border-[#E2E5EA] rounded-2xl overflow-hidden">
+            {/* Price section */}
+            <div className="p-5 space-y-3">
+              <div className="space-y-1">
+                {effectiveHasDiscount && (
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-[#EF4444] text-white border-0 text-sm px-2">%{effectiveDiscountPercent}</Badge>
+                    <span className="text-base text-[#8C95A6] line-through">{formatPrice(product.normalPrice)}</span>
+                  </div>
+                )}
+                <span className="text-3xl font-bold text-[#F27A1A]">{formatPrice(currentPrice)}</span>
+              </div>
+
+              {/* Stock status */}
+              <div className="flex items-center gap-2">
+                {effectiveStock > 0 ? (
+                  <Badge className="bg-[#ECFDF5] text-[#10B981] border-0 gap-1">
+                    <Check className="h-3 w-3" />
+                    Stokta {effectiveStock} adet
+                  </Badge>
+                ) : (
+                  <Badge className="bg-[#FEF2F2] text-[#EF4444] border-0 gap-1">
+                    <X className="h-3 w-3" />
+                    Stokta yok
+                  </Badge>
+                )}
+              </div>
+
+              {/* Shipping info */}
+              {effectiveStock > 0 && (
+                <div className="space-y-2 pt-1">
+                  {product.shippingTime && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Truck className="h-4 w-4 text-[#10B981]" />
+                      <span className="text-[#4A5568]">{product.shippingTime}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Shield className="h-4 w-4 text-[#10B981]" />
+                    <span className="text-[#4A5568]">Güvenli Ödeme</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <RotateCcw className="h-4 w-4 text-[#10B981]" />
+                    <span className="text-[#4A5568]">14 Gün İade</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Separator className="bg-[#E2E5EA]" />
+
+            {/* Quantity + Add to cart */}
+            <div className="p-5 space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-[#0F1B2D]">Adet:</span>
+                <div className="flex items-center border border-[#E2E5EA] rounded-lg">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 text-[#4A5568]"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-10 text-center font-medium text-[#0F1B2D]">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 text-[#4A5568]"
+                    onClick={() => setQuantity(Math.min(effectiveStock || 99, quantity + 1))}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleAddToCart}
+                disabled={effectiveStock <= 0}
+                className="w-full h-12 text-base font-bold bg-[#F27A1A] hover:bg-[#D4630E] text-white shadow-lg shadow-[#F27A1A]/20"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Sepete Ekle
+              </Button>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="h-10 border-[#E2E5EA] text-[#4A5568] hover:text-[#EF4444] hover:border-[#EF4444]"
+                  onClick={() => toggleFavorite(product.id)}
+                >
+                  <Heart className={`h-4 w-4 mr-1.5 ${isFavorite(product.id) ? 'fill-[#EF4444] text-[#EF4444]' : ''}`} />
+                  Favori
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-10 border-[#E2E5EA] text-[#4A5568] hover:text-[#F27A1A] hover:border-[#F27A1A]"
+                  onClick={() => toggleComparison(product.id)}
+                >
+                  <BarChart3 className={`h-4 w-4 mr-1.5 ${isComparing(product.id) ? 'text-[#F27A1A]' : ''}`} />
+                  Karşılaştır
+                </Button>
+              </div>
+
               <Button
                 variant="outline"
-                className="flex-1 h-10"
-                onClick={() => toggleFavorite(product.id)}
+                className="w-full h-10 border-[#E2E5EA] text-[#10B981] hover:bg-[#ECFDF5] hover:border-[#10B981]"
+                onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(product.name + ' - ' + window.location.href)}`, '_blank')}
               >
-                <Heart className={`h-4 w-4 mr-1.5 ${isFavorite(product.id) ? 'fill-[#E74C3C] text-[#E74C3C]' : ''}`} />
-                Favorilere Ekle
+                <MessageCircle className="h-4 w-4 mr-1.5" />
+                WhatsApp ile Sor
               </Button>
-              <Button
-                variant="outline"
-                className="flex-1 h-10"
-                onClick={() => toggleComparison(product.id)}
-              >
-                <BarChart3 className={`h-4 w-4 mr-1.5 ${isComparing(product.id) ? 'text-[#F27A1A]' : ''}`} />
-                Karşılaştır
-              </Button>
-            </div>
-          </div>
 
-          {/* Trust badges */}
-          <div className="flex items-center gap-4 pt-2 text-xs text-gray-500">
-            <div className="flex items-center gap-1">
-              <Truck className="h-4 w-4 text-[#3CB371]" />
-              <span>Hızlı Kargo</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Shield className="h-4 w-4 text-[#3CB371]" />
-              <span>Güvenli Ödeme</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <RotateCcw className="h-4 w-4 text-[#3CB371]" />
-              <span>Kolay İade</span>
+              <Button
+                variant="ghost"
+                className="w-full h-8 text-[#8C95A6] text-xs"
+                onClick={handleShare}
+              >
+                <Share2 className="h-3.5 w-3.5 mr-1.5" />
+                Paylaş
+              </Button>
             </div>
           </div>
         </div>
@@ -371,69 +468,77 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
       {/* Tabs Section */}
       <Tabs defaultValue="description" className="mt-10">
-        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0">
-          <TabsTrigger value="description" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold">
+        <TabsList className="w-full justify-start bg-transparent border-b border-[#E2E5EA] rounded-none h-auto p-0">
+          <TabsTrigger value="description" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold text-[#4A5568] data-[state=active]:text-[#0F1B2D]">
             Ürün Açıklaması
           </TabsTrigger>
-          <TabsTrigger value="specs" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold">
+          <TabsTrigger value="specs" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold text-[#4A5568] data-[state=active]:text-[#0F1B2D]">
             Teknik Özellikler
           </TabsTrigger>
-          <TabsTrigger value="reviews" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold">
+          <TabsTrigger value="reviews" className="px-6 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#F27A1A] data-[state=active]:bg-transparent data-[state=active]:shadow-none font-semibold text-[#4A5568] data-[state=active]:text-[#0F1B2D]">
             Yorumlar ({reviews.length})
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="description" className="pt-4">
-          <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: product.description || '<p>Bu ürün için açıklama bulunmamaktadır.</p>' }} />
+        <TabsContent value="description" className="pt-6">
+          <div className="prose prose-sm max-w-none text-[#4A5568]" dangerouslySetInnerHTML={{ __html: product.description || '<p>Bu ürün için açıklama bulunmamaktadır.</p>' }} />
         </TabsContent>
-        <TabsContent value="specs" className="pt-4">
+        <TabsContent value="specs" className="pt-6">
           {attributes.length > 0 ? (
-            <div className="border rounded-lg overflow-hidden max-w-2xl">
+            <div className="border border-[#E2E5EA] rounded-xl overflow-hidden max-w-2xl">
               <table className="w-full">
                 <tbody>
                   {attributes.map((attr: any, i: number) => (
-                    <tr key={attr.id || i} className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                      <td className="px-4 py-3 text-sm font-medium text-[#1A2744] w-1/3">{attr.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{attr.value}</td>
+                    <tr key={attr.id || i} className={i % 2 === 0 ? 'bg-[#F4F5F7]' : 'bg-white'}>
+                      <td className="px-5 py-3.5 text-sm font-medium text-[#0F1B2D] w-1/3">{attr.name}</td>
+                      <td className="px-5 py-3.5 text-sm text-[#4A5568]">{attr.value}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-500">Bu ürün için teknik özellik bulunmamaktadır.</p>
+            <p className="text-[#8C95A6]">Bu ürün için teknik özellik bulunmamaktadır.</p>
           )}
         </TabsContent>
-        <TabsContent value="reviews" className="pt-4">
+        <TabsContent value="reviews" className="pt-6">
           {reviews.length > 0 ? (
             <div className="space-y-4 max-w-3xl">
               {reviews.map((review: Review & { user?: { name: string } }) => (
-                <div key={review.id} className="border rounded-lg p-4">
+                <div key={review.id} className="border border-[#E2E5EA] rounded-xl p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{review.user?.name || 'Anonim'}</span>
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star key={s} className={`h-3.5 w-3.5 ${s <= review.rating ? 'fill-[#F27A1A] text-[#F27A1A]' : 'text-gray-300'}`} />
-                        ))}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#F27A1A] flex items-center justify-center text-white text-xs font-bold">
+                        {(review.user?.name || 'A')[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-sm text-[#0F1B2D]">{review.user?.name || 'Anonim'}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} className={`h-3.5 w-3.5 ${s <= review.rating ? 'fill-[#F27A1A] text-[#F27A1A]' : 'text-[#E2E5EA]'}`} />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString('tr-TR')}</span>
+                    <span className="text-xs text-[#8C95A6]">{new Date(review.createdAt).toLocaleDateString('tr-TR')}</span>
                   </div>
-                  {review.title && <h4 className="font-medium text-sm mb-1">{review.title}</h4>}
-                  {review.comment && <p className="text-sm text-gray-600">{review.comment}</p>}
+                  {review.title && <h4 className="font-medium text-sm mb-1 text-[#0F1B2D]">{review.title}</h4>}
+                  {review.comment && <p className="text-sm text-[#4A5568]">{review.comment}</p>}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">Bu ürün için henüz yorum yapılmamış.</p>
+            <div className="text-center py-8">
+              <Star className="w-12 h-12 mx-auto text-[#E2E5EA] mb-3" />
+              <p className="text-[#8C95A6]">Bu ürün için henüz yorum yapılmamış.</p>
+            </div>
           )}
         </TabsContent>
       </Tabs>
 
       {/* Similar Products */}
       {similarProducts.length > 0 && (
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-[#1A2744] mb-4">Benzer Ürünler</h2>
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-[#0F1B2D] mb-4">Benzer Ürünler</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
             {similarProducts.map((p: Product) => (
               <ProductCard key={p.id} product={p} />
@@ -444,8 +549,8 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
       {/* Store Products */}
       {storeProducts.length > 0 && product.store && (
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-[#1A2744] mb-4">
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-[#0F1B2D] mb-4">
             {product.store.name} Mağazasının Diğer Ürünleri
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">

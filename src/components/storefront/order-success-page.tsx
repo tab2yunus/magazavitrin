@@ -19,10 +19,10 @@ export default function OrderSuccessPage({ orderNumber }: OrderSuccessPageProps)
         <CardContent className="p-8">
           {/* Success icon */}
           <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-12 w-12 text-[#3CB371]" />
+            <CheckCircle className="h-12 w-12 text-[#10B981]" />
           </div>
 
-          <h1 className="text-2xl font-bold text-[#1A2744] mb-2">Siparişiniz Alındı!</h1>
+          <h1 className="text-2xl font-bold text-[#0F1B2D] mb-2">Siparişiniz Alındı!</h1>
           <p className="text-gray-500 mb-6">
             Siparişiniz başarıyla oluşturuldu. En kısa sürede hazırlanacak.
           </p>

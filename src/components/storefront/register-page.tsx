@@ -59,7 +59,7 @@ export default function RegisterPage() {
           <div className="mx-auto mb-2">
             <Link href="/" className="text-3xl font-extrabold">
               <span className="text-[#F27A1A]">Mağaza</span>
-              <span className="text-[#1A2744]">Vitrin</span>
+              <span className="text-[#0F1B2D]">Vitrin</span>
             </Link>
           </div>
           <CardTitle className="text-xl">Kayıt Ol</CardTitle>

@@ -69,7 +69,7 @@ export default function StorePage({ slug }: StorePageProps) {
   if (!store) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-[#1A2744]">Mağaza bulunamadı</h2>
+        <h2 className="text-2xl font-bold text-[#0F1B2D]">Mağaza bulunamadı</h2>
         <Button onClick={() => router.push('/')} className="mt-4 bg-[#F27A1A] hover:bg-[#D4630E]">
           Ana Sayfaya Dön
         </Button>
@@ -88,7 +88,7 @@ export default function StorePage({ slug }: StorePageProps) {
 
       {/* Cover & Logo */}
       <div className="relative rounded-xl overflow-hidden mb-6">
-        <div className="h-40 sm:h-56 bg-gradient-to-r from-[#1A2744] to-[#2D3F63]">
+        <div className="h-40 sm:h-56 bg-gradient-to-r from-[#0F1B2D] to-[#2D3F63]">
           {store.coverImage && (
             <img src={store.coverImage} alt="" className="w-full h-full object-cover" />
           )}
@@ -107,7 +107,7 @@ export default function StorePage({ slug }: StorePageProps) {
       {/* Store info */}
       <div className="mt-12 mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A2744]">{store.name}</h1>
+          <h1 className="text-2xl font-bold text-[#0F1B2D]">{store.name}</h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
             {store.city && (
               <span className="flex items-center gap-1">
@@ -146,7 +146,7 @@ export default function StorePage({ slug }: StorePageProps) {
           {/* Sort */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-[#1A2744]">{products.length}</span> ürün
+              <span className="font-semibold text-[#0F1B2D]">{products.length}</span> ürün
             </p>
             <Select value={sort} onValueChange={setSort}>
               <SelectTrigger className="w-40">
@@ -180,7 +180,7 @@ export default function StorePage({ slug }: StorePageProps) {
                     <span className="text-sm font-medium">{q.user?.name || 'Anonim'}</span>
                     <span className="text-xs text-gray-400">{new Date(q.createdAt).toLocaleDateString('tr-TR')}</span>
                   </div>
-                  <p className="text-sm text-[#1A2744]">{q.question}</p>
+                  <p className="text-sm text-[#0F1B2D]">{q.question}</p>
                   {q.isAnswered && q.answer && (
                     <div className="mt-3 pl-4 border-l-2 border-[#F27A1A]">
                       <p className="text-sm text-gray-600">{q.answer}</p>

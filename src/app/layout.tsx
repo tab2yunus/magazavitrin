@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MağazaVitrin - Online Alışveriş Pazaryeri",
-  description: "Türkiye'nin en büyük online alışveriş pazaryeri. Binlerce ürün, uygun fiyatlar, hızlı kargo.",
-  keywords: ["online alışveriş", "pazaryeri", "e-ticaret", "alışveriş", "indirim"],
+  title: "MağazaVitrin - Motosiklet Yedek Parça Pazaryeri",
+  description: "Türkiye'nin en büyük motosiklet yedek parça pazaryeri. Orijinal yedek parça, güvenli alışveriş ve hızlı kargo avantajıyla binlerce motosiklet parçasını keşfedin.",
+  keywords: ["motosiklet yedek parça", "motosiklet parça", "orijinal yedek parça", "OEM parça", "moto parça", "pazaryeri"],
   icons: {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "MağazaVitrin - Online Alışveriş Pazaryeri",
-    description: "Türkiye'nin en büyük online alışveriş pazaryeri",
+    title: "MağazaVitrin - Motosiklet Yedek Parça Pazaryeri",
+    description: "Türkiye'nin en büyük motosiklet yedek parça pazaryeri",
     type: "website",
   },
 };

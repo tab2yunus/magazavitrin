@@ -84,7 +84,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Sub-categories */}
       {category?.children && category.children.length > 0 && (
         <div>
-          <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Alt Kategoriler</h3>
+          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Alt Kategoriler</h3>
           <div className="space-y-2">
             {category.children.map((child) => (
               <Link
@@ -103,7 +103,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Brand filter */}
       {allBrands.length > 0 && (
         <div>
-          <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Marka</h3>
+          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Marka</h3>
           <ScrollArea className="max-h-48">
             <div className="space-y-2">
               {allBrands.map((brand) => (
@@ -122,7 +122,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
 
       {/* Price range */}
       <div>
-        <h3 className="font-semibold text-sm text-[#1A2744] mb-3">Fiyat Aralığı</h3>
+        <h3 className="font-semibold text-sm text-[#0F1B2D] mb-3">Fiyat Aralığı</h3>
         <Slider
           value={priceRange}
           onValueChange={setPriceRange}
@@ -139,7 +139,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
       {/* Selected filters */}
       {(selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 100000) && (
         <div>
-          <h3 className="font-semibold text-sm text-[#1A2744] mb-2">Seçili Filtreler</h3>
+          <h3 className="font-semibold text-sm text-[#0F1B2D] mb-2">Seçili Filtreler</h3>
           <div className="flex flex-wrap gap-2">
             {selectedBrands.map(brandId => {
               const brand = allBrands.find(b => b.id === brandId)
@@ -176,7 +176,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
         {/* Desktop sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="bg-white border rounded-lg p-4 sticky top-24">
-            <h2 className="font-bold text-[#1A2744] mb-4">Filtreler</h2>
+            <h2 className="font-bold text-[#0F1B2D] mb-4">Filtreler</h2>
             <FilterContent />
           </div>
         </aside>
@@ -186,7 +186,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
           {/* Top bar */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-[#1A2744]">{totalProducts}</span> ürün bulundu
+              <span className="font-semibold text-[#0F1B2D]">{totalProducts}</span> ürün bulundu
             </p>
             <div className="flex items-center gap-3">
               {/* Mobile filter */}
@@ -197,7 +197,7 @@ export default function CategoryPage({ slug }: CategoryPageProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-80">
-                  <SheetTitle className="font-bold text-[#1A2744] mb-4">Filtreler</SheetTitle>
+                  <SheetTitle className="font-bold text-[#0F1B2D] mb-4">Filtreler</SheetTitle>
                   <FilterContent />
                 </SheetContent>
               </Sheet>

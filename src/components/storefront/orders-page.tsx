@@ -55,12 +55,12 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#1A2744] mb-6">Siparişlerim</h1>
+      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">Siparişlerim</h1>
 
       {orders.length === 0 ? (
         <div className="text-center py-16">
           <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[#1A2744] mb-2">Henüz siparişiniz yok</h2>
+          <h2 className="text-xl font-bold text-[#0F1B2D] mb-2">Henüz siparişiniz yok</h2>
           <p className="text-gray-500 mb-6">Hemen alışverişe başlayın!</p>
           <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
             Alışverişe Başla
@@ -78,7 +78,7 @@ export default function OrdersPage() {
                         <Package className="h-6 w-6 text-[#F27A1A]" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-[#1A2744]">#{order.orderNumber}</p>
+                        <p className="font-semibold text-sm text-[#0F1B2D]">#{order.orderNumber}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           {new Date(order.createdAt).toLocaleDateString('tr-TR', {
                             day: 'numeric', month: 'long', year: 'numeric'
@@ -92,7 +92,7 @@ export default function OrdersPage() {
                         <Badge className={`${getStatusColor(order.status)} border-0 text-xs`}>
                           {getStatusText(order.status)}
                         </Badge>
-                        <p className="text-sm font-bold text-[#1A2744] mt-1">{formatPrice(order.totalAmount)}</p>
+                        <p className="text-sm font-bold text-[#0F1B2D] mt-1">{formatPrice(order.totalAmount)}</p>
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-400" />
                     </div>
@@ -103,7 +103,7 @@ export default function OrdersPage() {
                     <Badge className={`${getStatusColor(order.status)} border-0 text-xs`}>
                       {getStatusText(order.status)}
                     </Badge>
-                    <p className="text-sm font-bold text-[#1A2744]">{formatPrice(order.totalAmount)}</p>
+                    <p className="text-sm font-bold text-[#0F1B2D]">{formatPrice(order.totalAmount)}</p>
                   </div>
 
                   {order.items && (

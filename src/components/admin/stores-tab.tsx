@@ -143,7 +143,7 @@ export default function StoresTab() {
                 {stores.map(s => (
                   <TableRow key={s.id}>
                     <TableCell>
-                      <div className="w-10 h-10 rounded-lg bg-[#1A2744] flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-[#0F1B2D] flex items-center justify-center">
                         {s.logo ? <img src={s.logo} alt={s.name} className="w-8 h-8 rounded object-cover" /> : <Store className="w-4 h-4 text-white" />}
                       </div>
                     </TableCell>

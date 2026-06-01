@@ -3,11 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================
+   İKİZ MOTOR - Premium Motorcycle Marketplace
+   Custom Brand Color System
+   ============================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* shadcn/ui semantic tokens */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,84 +48,154 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* ============================================
+     BRAND COLOR TOKENS
+     Koyu Gece Laciverti + Elektrik Turuncusu + Metalik Gri
+     ============================================ */
+
+  /* Primary - Elektrik Turuncusu (Ana marka rengi) */
+  --color-brand-primary: #F27A1A;
+  --color-brand-primary-dark: #D4630E;
+  --color-brand-primary-light: #FFF3E8;
+  --color-brand-primary-50: #FFF8F0;
+  --color-brand-primary-100: #FFECD8;
+  --color-brand-primary-200: #FFD5A8;
+  --color-brand-primary-500: #F27A1A;
+  --color-brand-primary-600: #D4630E;
+  --color-brand-primary-700: #B3520A;
+
+  /* Secondary - Koyu Gece Laciverti */
+  --color-brand-secondary: #0F1B2D;
+  --color-brand-secondary-dark: #080F1A;
+  --color-brand-secondary-light: #1B2D45;
+  --color-brand-secondary-50: #F0F3F7;
+  --color-brand-secondary-100: #D6DEE8;
+  --color-brand-secondary-200: #A8B8CC;
+  --color-brand-secondary-500: #0F1B2D;
+  --color-brand-secondary-600: #0A1220;
+  --color-brand-secondary-700: #060C15;
+
+  /* Accent - Neon Turuncu Vurgu */
+  --color-brand-accent: #FF8C38;
+  --color-brand-accent-light: #FFB366;
+  --color-brand-accent-dark: #E06A00;
+
+  /* Surface - Metalik Gri */
+  --color-brand-surface: #F4F5F7;
+  --color-brand-surface-dark: #E8EAED;
+  --color-brand-surface-darker: #C8CCD2;
+
+  /* Text hierarchy */
+  --color-brand-text: #0F1B2D;
+  --color-brand-text-secondary: #4A5568;
+  --color-brand-text-muted: #8C95A6;
+  --color-brand-text-inverse: #FFFFFF;
+
+  /* Status colors */
+  --color-brand-success: #10B981;
+  --color-brand-success-light: #ECFDF5;
+  --color-brand-warning: #F59E0B;
+  --color-brand-warning-light: #FFFBEB;
+  --color-brand-danger: #EF4444;
+  --color-brand-danger-light: #FEF2F2;
+  --color-brand-info: #3B82F6;
+  --color-brand-info-light: #EFF6FF;
+
+  /* Border */
+  --color-brand-border: #E2E5EA;
+  --color-brand-border-light: #F0F1F3;
+
+  /* Legacy compatibility (will be removed) */
   --color-market-orange: #F27A1A;
   --color-market-orange-dark: #D4630E;
   --color-market-orange-light: #FFF3E8;
-  --color-market-navy: #1A2744;
-  --color-market-navy-light: #2D3F63;
-  --color-market-gray: #F5F5F5;
-  --color-market-gray-dark: #E0E0E0;
-  --color-market-green: #3CB371;
-  --color-market-red: #E74C3C;
+  --color-market-navy: #0F1B2D;
+  --color-market-navy-light: #1B2D45;
+  --color-market-gray: #F4F5F7;
+  --color-market-gray-dark: #E8EAED;
+  --color-market-green: #10B981;
+  --color-market-red: #EF4444;
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.75rem;
+
+  /* Map brand tokens to shadcn/ui system */
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.15 0.02 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.15 0.02 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.15 0.02 260);
+
+  /* Primary = Elektrik Turuncusu */
   --primary: oklch(0.688 0.189 57.5);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0.01 57.5);
-  --accent-foreground: oklch(0.205 0 0);
+
+  /* Secondary = Gece Laciverti */
+  --secondary: oklch(0.22 0.03 260);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.97 0.005 260);
+  --muted-foreground: oklch(0.556 0.01 260);
+  --accent: oklch(0.97 0.02 57.5);
+  --accent-foreground: oklch(0.22 0.03 260);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.922 0.005 260);
+  --input: oklch(0.922 0.005 260);
   --ring: oklch(0.688 0.189 57.5);
+
+  /* Chart colors - brand aligned */
   --chart-1: oklch(0.688 0.189 57.5);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.145 0.02 260);
+
+  /* Sidebar = Gece Laciverti */
+  --sidebar: oklch(0.18 0.03 260);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.688 0.189 57.5);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.22 0.02 260);
+  --sidebar-accent: oklch(0.25 0.03 260);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.688 0.189 57.5);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.12 0.01 260);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.16 0.015 260);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.16 0.015 260);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.688 0.189 57.5);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.22 0.025 260);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.22 0.015 260);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.22 0.025 260);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.688 0.189 57.5);
   --chart-1: oklch(0.688 0.189 57.5);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.12 0 0);
+  --sidebar: oklch(0.1 0.01 260);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.688 0.189 57.5);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.2 0 0);
+  --sidebar-accent: oklch(0.18 0.02 260);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.688 0.189 57.5);
 }
 
 @layer base {
@@ -130,32 +207,178 @@
   }
 }
 
-/* Custom scrollbar */
+/* ============================================
+   CUSTOM SCROLLBAR - Premium
+   ============================================ */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: oklch(0.8 0.005 260);
   border-radius: 3px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: oklch(0.65 0.01 260);
 }
 
-/* Product card hover effect */
+/* ============================================
+   PRODUCT CARD - Premium Hover Effects
+   ============================================ */
 .product-card {
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(15, 27, 45, 0.08),
+              0 2px 8px rgba(242, 122, 26, 0.06);
+  transform: translateY(-4px);
 }
 
-/* Star rating */
+/* ============================================
+   ANIMATIONS - Premium Micro-interactions
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered animations */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* Skeleton loading shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(90deg,
+    oklch(0.94 0.003 260) 25%,
+    oklch(0.97 0.003 260) 50%,
+    oklch(0.94 0.003 260) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ============================================
+   STAR RATING
+   ============================================ */
 .star-rating {
   color: #F27A1A;
+}
+
+/* ============================================
+   BRAND GRADIENTS
+   ============================================ */
+.brand-gradient-primary {
+  background: linear-gradient(135deg, #0F1B2D 0%, #1B2D45 50%, #243B56 100%);
+}
+
+.brand-gradient-accent {
+  background: linear-gradient(135deg, #F27A1A 0%, #FF8C38 50%, #FFB366 100%);
+}
+
+.brand-gradient-hero {
+  background: linear-gradient(135deg, #0F1B2D 0%, #1B2D45 40%, #243B56 70%, #2D4F6B 100%);
+}
+
+/* ============================================
+   GLASS MORPHISM EFFECTS
+   ============================================ */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-dark {
+  background: rgba(15, 27, 45, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ============================================
+   BRAND TEXT
+   ============================================ */
+.brand-text-gradient {
+  background: linear-gradient(135deg, #F27A1A, #FF8C38);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   MARQUEE / SCROLL ANIMATION
+   ============================================ */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* ============================================
+   BRAND PULSE DOT
+   ============================================ */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

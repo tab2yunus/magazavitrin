@@ -55,15 +55,15 @@ export default function FavoritesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-[#1A2744] mb-6">
-        <Heart className="h-6 w-6 inline-block mr-2 text-[#E74C3C]" />
+      <h1 className="text-2xl font-bold text-[#0F1B2D] mb-6">
+        <Heart className="h-6 w-6 inline-block mr-2 text-[#EF4444]" />
         Favorilerim ({products.length})
       </h1>
 
       {products.length === 0 ? (
         <div className="text-center py-16">
           <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[#1A2744] mb-2">Favori ürününüz yok</h2>
+          <h2 className="text-xl font-bold text-[#0F1B2D] mb-2">Favori ürününüz yok</h2>
           <p className="text-gray-500 mb-6">Beğendiğiniz ürünleri favorilere ekleyin!</p>
           <Button onClick={() => router.push('/')} className="bg-[#F27A1A] hover:bg-[#D4630E]">
             Alışverişe Başla

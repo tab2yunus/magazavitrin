@@ -304,7 +304,7 @@ export default function ScraperTab() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#1A2744] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-[#0F1B2D] flex items-center gap-2">
             <Database className="w-6 h-6" />
             Çoklu Sağlayıcı Scraper
           </h2>
@@ -473,7 +473,7 @@ export default function ScraperTab() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-7 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#1A2744]">{scrapeResult.totalScraped}</p>
+                  <p className="text-2xl font-bold text-[#0F1B2D]">{scrapeResult.totalScraped}</p>
                   <p className="text-xs text-gray-600">Çekilen</p>
                 </div>
                 <div className="text-center">
@@ -530,14 +530,14 @@ export default function ScraperTab() {
         <Card>
           <CardContent className="p-4 text-center">
             <Package className="w-8 h-8 mx-auto text-[#F27A1A] mb-2" />
-            <p className="text-2xl font-bold text-[#1A2744]">{publishStatus.totalImported}</p>
+            <p className="text-2xl font-bold text-[#0F1B2D]">{publishStatus.totalImported}</p>
             <p className="text-xs text-gray-500">İçe Aktarılan</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Database className="w-8 h-8 mx-auto text-blue-500 mb-2" />
-            <p className="text-2xl font-bold text-[#1A2744]">{categories.length}</p>
+            <p className="text-2xl font-bold text-[#0F1B2D]">{categories.length}</p>
             <p className="text-xs text-gray-500">Kategori</p>
           </CardContent>
         </Card>
@@ -616,11 +616,11 @@ export default function ScraperTab() {
                     <div className="flex-1 p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-[#1A2744] flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-xl bg-[#0F1B2D] flex items-center justify-center">
                             <Globe className="w-6 h-6 text-[#F27A1A]" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-[#1A2744]">{provider.name}</h3>
+                            <h3 className="text-lg font-bold text-[#0F1B2D]">{provider.name}</h3>
                             <div className="flex items-center gap-2 mt-0.5">
                               <Badge variant="outline" className="text-xs">{provider.type === 'web_scraper' ? 'Web Scraper' : provider.type}</Badge>
                               <Badge className={provider.isActive ? 'bg-green-100 text-green-700 hover:bg-green-100' : 'bg-red-100 text-red-700 hover:bg-red-100'}>
@@ -648,7 +648,7 @@ export default function ScraperTab() {
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div className="bg-gray-50 rounded-lg p-3 text-center">
-                          <p className="text-xl font-bold text-[#1A2744]">{provider.stats.totalImported}</p>
+                          <p className="text-xl font-bold text-[#0F1B2D]">{provider.stats.totalImported}</p>
                           <p className="text-xs text-gray-500">İçe Aktarılan</p>
                         </div>
                         <div className="bg-green-50 rounded-lg p-3 text-center">
@@ -1045,7 +1045,7 @@ export default function ScraperTab() {
 
       {/* Scraping Progress */}
       {scraping && (
-        <div className="fixed bottom-4 right-4 bg-[#1A2744] text-white rounded-xl px-6 py-4 shadow-2xl z-50 flex items-center gap-3">
+        <div className="fixed bottom-4 right-4 bg-[#0F1B2D] text-white rounded-xl px-6 py-4 shadow-2xl z-50 flex items-center gap-3">
           <Loader2 className="w-5 h-5 animate-spin text-[#F27A1A]" />
           <div>
             <p className="font-semibold">Scraping Çalışıyor...</p>

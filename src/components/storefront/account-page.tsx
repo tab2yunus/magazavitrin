@@ -61,7 +61,7 @@ export default function AccountPage() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-[#1A2744]">{user.name}</h2>
+              <h2 className="text-xl font-bold text-[#0F1B2D]">{user.name}</h2>
               <p className="text-sm text-gray-500">{user.email}</p>
               <div className="mt-1">
                 <Badge variant="outline" className={user.role === 'super_admin' || user.role === 'editor' ? 'text-[#F27A1A] border-[#F27A1A]' : 'text-gray-500'}>
@@ -85,7 +85,7 @@ export default function AccountPage() {
                 <div className={`w-12 h-12 rounded-full ${link.color} flex items-center justify-center mx-auto mb-3`}>
                   <link.icon className="h-6 w-6" />
                 </div>
-                <p className="font-medium text-sm text-[#1A2744]">{link.label}</p>
+                <p className="font-medium text-sm text-[#0F1B2D]">{link.label}</p>
               </CardContent>
             </Card>
           </Link>
@@ -101,7 +101,7 @@ export default function AccountPage() {
                 <Shield className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-[#1A2744]">Yönetim Paneli</p>
+                <p className="font-semibold text-[#0F1B2D]">Yönetim Paneli</p>
                 <p className="text-xs text-gray-500">Ürün, sipariş ve site yönetimi</p>
               </div>
             </CardContent>
@@ -112,7 +112,7 @@ export default function AccountPage() {
       {/* Account details */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="font-semibold text-[#1A2744] mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-[#0F1B2D] mb-4 flex items-center gap-2">
             <Settings className="h-5 w-5 text-gray-400" /> Hesap Bilgileri
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
