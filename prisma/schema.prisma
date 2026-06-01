@@ -99,20 +99,44 @@ model Product {
   slug            String   @unique
   sku             String?
   barcode         String?
+  oemCode         String?
+  productCode     String?
   description     String?
   shortDescription String?
   normalPrice     Float
   discountPrice   Float?
   stock           Int      @default(0)
+  stockStatus     String   @default("instock") // instock, outofstock, preorder, comingsoon
+  criticalStock   Int      @default(5)
+  shippingWeight  Float?   // kg
+  shippingVolume  Float?   // desı
   shippingTime    String?
   isActive        Boolean  @default(true)
   isFeatured      Boolean  @default(false)
   isBestSeller    Boolean  @default(false)
   isNew           Boolean  @default(false)
+  publishStatus   String   @default("active") // active, passive, draft, archived, scheduled
+  scheduledAt     DateTime?
+  // SEO fields
   seoTitle        String?
   seoDescription  String?
   focusKeyword    String?
   canonicalUrl    String?
+  noindex         Boolean  @default(false)
+  nofollow        Boolean  @default(false)
+  // Open Graph / Social
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  twitterTitle    String?
+  twitterDescription String?
+  twitterImage    String?
+  // Schema
+  schemaEnabled   Boolean  @default(true)
+  gtin            String?
+  mpn             String?
+  schemaCondition String   @default("NewCondition") // NewCondition, UsedCondition, RefurbishedCondition
+  schemaAvailability String  @default("InStock") // InStock, OutOfStock, PreOrder, BackOrder
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -338,25 +362,48 @@ model StoreQuestion {
 
 // ─── SITE SETTINGS ──────────────────────────────────────────
 model SiteSetting {
-  id    String @id @default(cuid())
-  key   String @unique
-  value String?
-  type  String @default("text") // text, textarea, json, boolean, number
-  group String @default("general") // general, seo, email, payment, shipping
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?
+  type      String   @default("text") // text, textarea, json, boolean, number, image
+  group     String   @default("general") // general, identity, contact, social, seo, meta, sitemap, robots, schema, og, maintenance, legal
+  label     String?  // Human-readable label for admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ─── SEO SETTINGS ──────────────────────────────────────────
 model SeoSetting {
   id              String  @id @default(cuid())
   pageType        String  @unique // home, product, category, brand, store, etc.
+  titleTemplate   String? // e.g., {PRODUCT_NAME} | {SITE_NAME}
+  descriptionTemplate String?
   title           String?
   description     String?
   keywords        String?
   ogTitle         String?
   ogDescription   String?
   ogImage         String?
+  twitterTitle    String?
+  twitterDescription String?
+  twitterImage    String?
   canonicalUrl    String?
   robotsDirective String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── LEGAL PAGE ────────────────────────────────────────────
+model LegalPage {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  content     String?
+  type        String   @default("custom") // privacy, terms, distance_sales, kvkk, return, contact, custom
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ─── IMPORTED PRODUCTS (MOTOLUX SCRAPER) ───────────────────

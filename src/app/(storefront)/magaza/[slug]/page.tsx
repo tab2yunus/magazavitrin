@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import { db } from '@/lib/db'
+import { generatePageMetadata, generateBreadcrumbSchema, generateStoreSchema } from '@/lib/seo'
 import StoreClient from './store-client'
 
 interface StorePageProps {
@@ -7,26 +9,27 @@ interface StorePageProps {
 
 export async function generateMetadata({ params }: StorePageProps): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/stores/${slug}`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { title: 'Mağaza - MağazaVitrin' }
-    
-    const store = await res.json()
-    
-    return {
-      title: store.name ? `${store.name} - MağazaVitrin` : 'Mağaza - MağazaVitrin',
-      description: store.seoDescription || store.description || `${store.name || slug} mağazasının ürünleri`,
-      keywords: [store.name, 'motosiklet', 'yedek parça', 'mağaza'].filter(Boolean),
-      openGraph: {
-        title: store.name ? `${store.name} - MağazaVitrin` : 'Mağaza - MağazaVitrin',
-        description: store.description || '',
-        images: store.logo ? [{ url: store.logo }] : [],
+    const store = await db.store.findFirst({ where: { slug } })
+    if (!store) return { title: 'Mağaza - MağazaVitrin' }
+
+    const title = store.seoTitle || `${store.name} Mağazası`
+    const description = store.seoDescription || store.description || `${store.name} mağazasının ürünleri`
+
+    return generatePageMetadata({
+      pageType: 'store',
+      title,
+      description,
+      keywords: [store.name, store.city, 'motosiklet', 'yedek parça', 'mağaza'].filter(Boolean) as string[],
+      image: store.logo || undefined,
+      url: `/magaza/${slug}`,
+      variables: {
+        STORE_NAME: store.name,
+        CITY: store.city || '',
+        DESCRIPTION: store.description || '',
       },
-      alternates: {
-        canonical: `/magaza/${slug}`,
-      },
-    }
+    })
   } catch {
     return { title: 'Mağaza - MağazaVitrin' }
   }
@@ -34,5 +37,39 @@ export async function generateMetadata({ params }: StorePageProps): Promise<Meta
 
 export default async function StorePage({ params }: StorePageProps) {
   const { slug } = await params
-  return <StoreClient slug={slug} />
+
+  let store = null
+  try {
+    store = await db.store.findFirst({ where: { slug } })
+  } catch { /* ignore */ }
+
+  const breadcrumbItems = [
+    { name: 'Ana Sayfa', url: '/' },
+    ...(store ? [{ name: store.name, url: `/magaza/${store.slug}` }] : []),
+  ]
+  const breadcrumbLd = generateBreadcrumbSchema(breadcrumbItems)
+
+  const storeLd = store ? generateStoreSchema({
+    name: store.name,
+    description: store.description || undefined,
+    url: `/magaza/${store.slug}`,
+    address: store.city || undefined,
+    phone: undefined,
+  }) : null
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {storeLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(storeLd) }}
+        />
+      )}
+      <StoreClient slug={slug} />
+    </>
+  )
 }
